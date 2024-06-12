@@ -256,12 +256,12 @@ namespace CopyrightUpdater
 
                             if (file.Extension == ".php")
                             {
-                                File.WriteAllText(temp, "<?php" + Environment.NewLine + config.licenseText + Environment.NewLine + Environment.NewLine + File.ReadAllText(file.FullName).Replace("<?php", ""));
+                                File.WriteAllText(temp, "<?php" + "\n" + config.licenseText + "\n\n" + File.ReadAllText(file.FullName).Replace("<?php", ""));
                             }
                             else
                             {
                                 var newComment = GetCorrectComment(config, file.FullName, dirConfig.directoryKey);
-                                File.WriteAllText(temp, newComment + Environment.NewLine + Environment.NewLine + File.ReadAllText(file.FullName));
+                                File.WriteAllText(temp, newComment + "\n\n" + File.ReadAllText(file.FullName));
                             }
                             File.Replace(temp, file.FullName, null);
                         } 
@@ -279,7 +279,7 @@ namespace CopyrightUpdater
                 catch (Exception ex)
                 {
                     string message = $"Error with file '{file.FullName}'" +
-                        $"{Environment.NewLine}{ex.GetType()} - {ex.Message}";
+                        $"\n{ex.GetType()} - {ex.Message}";
                     Console.WriteLine(message);
                     throw;
                 }
@@ -337,7 +337,7 @@ namespace CopyrightUpdater
             if (directoryKey == "python")
             {
                 newComment = newComment.Replace("/*", "#");
-                newComment = newComment.Replace("*/", "");
+                newComment = newComment.Replace(" */", "");
                 newComment = newComment.Replace("\n *", "\n#");
             }
             return newComment;
