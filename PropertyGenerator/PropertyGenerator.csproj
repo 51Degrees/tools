@@ -10,12 +10,9 @@
   <ItemGroup>
     <PackageReference Include="FiftyOne.DeviceDetection.Hash.Engine.OnPremise" Version="4.4.213" />
     <PackageReference Include="FiftyOne.MetaData" Version="5.0.28" />
+    <PackageReference Include="FiftyOne.IpIntelligence.Engine.OnPremise" Version="4.5.0-alpha.41" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ip-intelligence-dotnet\FiftyOne.IpIntelligence.Engine.OnPremise\FiftyOne.IpIntelligence.Engine.OnPremise.csproj" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <None Update="Copyright.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
