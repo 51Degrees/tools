@@ -11,7 +11,8 @@ try {
     # otherwise without passing this argument it tries to infer win-x86 
     # from the IpIntelligence package and fails
     # it is supposed to build on ubuntu-latest x64, so this should work
-    dotnet run -p:Platform=x64 $DataFile ..
+    dotnet build -c:Release -p:Platform=x64
+    dotnet "$(find ./bin -name PropertyGenerator.dll | head -n 1)" "$DataFile" ..
 } finally {
     Pop-Location
 }
