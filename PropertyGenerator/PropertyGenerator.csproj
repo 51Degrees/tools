@@ -10,13 +10,13 @@
   <ItemGroup>
     <PackageReference Include="FiftyOne.DeviceDetection.Hash.Engine.OnPremise" Version="4.4.213" />
     <PackageReference Include="FiftyOne.MetaData" Version="5.0.28" />
-    <PackageReference Include="FiftyOne.IpIntelligence.Engine.OnPremise" Version="4.5.0-alpha.41" />
+    <PackageReference Include="FiftyOne.IpIntelligence.Engine.OnPremise" Version="4.5.0-alpha.50" />
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="Copyright.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="..\Copyright.txt">
+      <Link>Copyright.txt</Link>
+    </Content>
   </ItemGroup>
 
 </Project>
