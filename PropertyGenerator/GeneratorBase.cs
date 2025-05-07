@@ -39,7 +39,8 @@ namespace PropertyGenerator
         {
             try
             {
-                using (var reader = new StreamReader("Copyright.txt"))
+                var path = Path.Combine(AppContext.BaseDirectory, "Copyright.txt");
+                using (var reader = new StreamReader(path))
                 {
                     return reader.ReadToEnd();
                 }
