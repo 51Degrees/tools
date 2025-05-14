@@ -112,7 +112,6 @@ namespace PropertyGenerationTool
                 {
                     writer.WriteLine($"import {import};");
                 }
-                writer.WriteLine("import fiftyone.pipeline.core.data.types.JavaScript;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectData;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectPropertyValue;");
                 writer.WriteLine("import java.util.List;");
@@ -156,14 +155,13 @@ namespace PropertyGenerationTool
             using (var writer = new StreamWriter(outputStream))
             {
                 writer.WriteLine(copyright);
-                writer.WriteLine("package fiftyone.devicedetection.shared;");
+                writer.WriteLine($"package {package};");
 
                 foreach (var import in imports)
                 {
                     writer.WriteLine($"import {import};");
                 }
                 writer.WriteLine("import fiftyone.pipeline.core.data.FlowData;");
-                writer.WriteLine("import fiftyone.pipeline.core.data.types.JavaScript;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectData;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectDataBase;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectPropertyMetaData;");
@@ -185,7 +183,7 @@ namespace PropertyGenerationTool
                 writer.WriteLine(" * @param missingPropertyService service used to determine the reason for");
                 writer.WriteLine(" *                               a property value being missing");
                 writer.WriteLine(" */");
-                writer.WriteLine("\tprotected DeviceDataBase(");
+                writer.WriteLine($"\tprotected {name}(");
                 writer.WriteLine("\t\tLogger logger,");
                 writer.WriteLine("\t\tFlowData flowData,");
                 writer.WriteLine("\t\tAspectEngine<? extends AspectData, ? extends AspectPropertyMetaData> engine,");

@@ -75,7 +75,9 @@ namespace PropertyGenerationTool
                 "DeviceData",
                 _copyright,
                 "fiftyone.devicedetection.shared",
-                new string[0],
+                [
+                    "fiftyone.pipeline.core.data.types.JavaScript",
+                ],
                 _engine.Properties.ToArray(),
                 (s) => $"AspectPropertyValue<{s}>",
                 basePath + "/DeviceData.java");
@@ -87,7 +89,9 @@ namespace PropertyGenerationTool
                 "DeviceData",
                 _copyright,
                 "fiftyone.devicedetection.shared",
-                new string[0],
+                [
+                    "fiftyone.pipeline.core.data.types.JavaScript",
+                ],
                 _engine.Properties.ToArray(),
                 (s) => $"AspectPropertyValue<{s}>",
                 basePath + "/DeviceDataBase.java");

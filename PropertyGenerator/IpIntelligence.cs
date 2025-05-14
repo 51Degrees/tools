@@ -70,9 +70,11 @@ namespace PropertyGenerator
                 "IPIntelligenceData",
                 _copyright,
                 "fiftyone.ipintelligence.shared",
-                new string[0],
+                [
+                    "fiftyone.pipeline.core.data.IWeightedValue",
+                ],
                 _engine.Properties.ToArray(),
-                (s) => $"IReadOnlyList<IWeightedValue<{s}>>",
+                (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",
                 basePath + "/IPIntelligenceData.java");
             Console.WriteLine(String.Format(
                 "Building IPIntelligenceDataBase.java for in '{0}'.",
@@ -82,9 +84,11 @@ namespace PropertyGenerator
                 "IPIntelligenceData",
                 _copyright,
                 "fiftyone.ipintelligence.shared",
-                new string[0],
+                [
+                    "fiftyone.pipeline.core.data.IWeightedValue",
+                ],
                 _engine.Properties.ToArray(),
-                (s) => $"IReadOnlyList<IWeightedValue<{s}>>",
+                (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",
                 basePath + "/IPIntelligenceDataBase.java");
         }
     }
