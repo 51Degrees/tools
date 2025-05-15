@@ -61,6 +61,10 @@ namespace PropertyGenerator
 
         public override void BuildJava(string basePath)
         {
+            IEnumerable<string> imports = [
+                "java.net.InetAddress",
+                "fiftyone.pipeline.core.data.IWeightedValue",
+            ];
             Console.WriteLine(String.Format(
                 "Building IPIntelligenceData.java for in '{0}'.",
                 new DirectoryInfo(basePath).FullName));
@@ -70,9 +74,9 @@ namespace PropertyGenerator
                 "IPIntelligenceData",
                 _copyright,
                 "fiftyone.ipintelligence.shared",
-                new string[0],
+                imports,
                 _engine.Properties.ToArray(),
-                (s) => $"IReadOnlyList<IWeightedValue<{s}>>",
+                (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",
                 basePath + "/IPIntelligenceData.java");
             Console.WriteLine(String.Format(
                 "Building IPIntelligenceDataBase.java for in '{0}'.",
@@ -82,9 +86,9 @@ namespace PropertyGenerator
                 "IPIntelligenceData",
                 _copyright,
                 "fiftyone.ipintelligence.shared",
-                new string[0],
+                imports,
                 _engine.Properties.ToArray(),
-                (s) => $"IReadOnlyList<IWeightedValue<{s}>>",
+                (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",
                 basePath + "/IPIntelligenceDataBase.java");
         }
     }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,6 +65,9 @@ namespace PropertyGenerationTool
                 case Type javaScriptType when javaScriptType == typeof(JavaScript):
                     typeString = "JavaScript";
                     break;
+                case Type javaScriptType when javaScriptType == typeof(IPAddress):
+                    typeString = "InetAddress";
+                    break;
                 case Type stringType when stringType == typeof(String):
                 default:
                     typeString = "String";
@@ -97,7 +101,7 @@ namespace PropertyGenerationTool
             string name,
             string copyright,
             string package,
-            string[] imports,
+            IEnumerable<string> imports,
             T[] properties,
             Func<string, string> formatType,
             string outputPath)
@@ -112,7 +116,6 @@ namespace PropertyGenerationTool
                 {
                     writer.WriteLine($"import {import};");
                 }
-                writer.WriteLine("import fiftyone.pipeline.core.data.types.JavaScript;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectData;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectPropertyValue;");
                 writer.WriteLine("import java.util.List;");
@@ -147,7 +150,7 @@ namespace PropertyGenerationTool
             string interfaceName,
             string copyright,
             string package,
-            string[] imports,
+            IEnumerable<string> imports,
             T[] properties,
             Func<string, string> formatType,
             string outputPath)
@@ -156,14 +159,13 @@ namespace PropertyGenerationTool
             using (var writer = new StreamWriter(outputStream))
             {
                 writer.WriteLine(copyright);
-                writer.WriteLine("package fiftyone.devicedetection.shared;");
+                writer.WriteLine($"package {package};");
 
                 foreach (var import in imports)
                 {
                     writer.WriteLine($"import {import};");
                 }
                 writer.WriteLine("import fiftyone.pipeline.core.data.FlowData;");
-                writer.WriteLine("import fiftyone.pipeline.core.data.types.JavaScript;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectData;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectDataBase;");
                 writer.WriteLine("import fiftyone.pipeline.engines.data.AspectPropertyMetaData;");
@@ -185,7 +187,7 @@ namespace PropertyGenerationTool
                 writer.WriteLine(" * @param missingPropertyService service used to determine the reason for");
                 writer.WriteLine(" *                               a property value being missing");
                 writer.WriteLine(" */");
-                writer.WriteLine("\tprotected DeviceDataBase(");
+                writer.WriteLine($"\tprotected {name}(");
                 writer.WriteLine("\t\tLogger logger,");
                 writer.WriteLine("\t\tFlowData flowData,");
                 writer.WriteLine("\t\tAspectEngine<? extends AspectData, ? extends AspectPropertyMetaData> engine,");
