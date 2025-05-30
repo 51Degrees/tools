@@ -74,6 +74,8 @@ namespace PropertyGenerator
                 "IPIntelligenceData",
                 _copyright,
                 "fiftyone.ipintelligence.shared",
+                " * Interface exposing typed accessors for properties related to an IP.\n" +
+                " * This includes the network, and location.",
                 imports,
                 _engine.Properties.ToArray(),
                 (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",

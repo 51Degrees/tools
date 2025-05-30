@@ -47,32 +47,18 @@ namespace PropertyGenerationTool
             T property,
             Func<string, string> formatType)
         {
-            string typeString;
-            switch (GetPropertyType(property))
+            string typeString = GetPropertyType(property) switch
             {
-                case Type intType when intType == typeof(Int32):
-                    typeString = "Integer";
-                    break;
-                case Type boolType when boolType == typeof(Boolean):
-                    typeString = "Boolean";
-                    break;
-                case Type doubleType when doubleType == typeof(Double):
-                    typeString = "Double";
-                    break;
-                case Type listType when listType == typeof(IReadOnlyList<string>):
-                    typeString = "List<String>";
-                    break;
-                case Type javaScriptType when javaScriptType == typeof(JavaScript):
-                    typeString = "JavaScript";
-                    break;
-                case Type javaScriptType when javaScriptType == typeof(IPAddress):
-                    typeString = "InetAddress";
-                    break;
-                case Type stringType when stringType == typeof(String):
-                default:
-                    typeString = "String";
-                    break;
-            }
+                // Keep the branches in sync with [CSClassBuilder] !!
+                Type intType when intType == typeof(Int32) => "Integer",
+                Type boolType when boolType == typeof(Boolean) => "Boolean",
+                Type doubleType when doubleType == typeof(Double) => "Double",
+                Type listType when listType == typeof(IReadOnlyList<string>) => "List<String>",
+                Type floatType when floatType == typeof(float) => "Float",
+                Type ipType when ipType == typeof(IPAddress) => "InetAddress",
+                Type javaScriptType when javaScriptType == typeof(JavaScript) => "JavaScript",
+                _ => "String",
+            };
             return formatType(typeString);
         }
 
@@ -100,6 +86,7 @@ namespace PropertyGenerationTool
         internal void BuildInterface(
             string name,
             string copyright,
+            string description,
             string package,
             IEnumerable<string> imports,
             T[] properties,
@@ -123,9 +110,7 @@ namespace PropertyGenerationTool
                 writer.WriteLine("// This interface sits at the top of the name space in order to make");
                 writer.WriteLine("// life easier for consumers.");
                 writer.WriteLine("/**");
-                // TODO
-                writer.WriteLine(" * Interface exposing typed accessors for properties related to a device");
-                writer.WriteLine(" * returned by a device detection engine.");
+                writer.WriteLine(description);
                 writer.WriteLine(" */");
                 writer.WriteLine($"public interface {name} extends AspectData");
                 writer.WriteLine("{");
