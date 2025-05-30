@@ -46,36 +46,18 @@ namespace PropertyGenerationTool
             T property,
             Func<string, string> formatType)
         {
-            string typeString;
-            switch (GetPropertyType(property))
+            string typeString = GetPropertyType(property) switch
             {
-                case Type intType when intType == typeof(Int32):
-                    typeString = "int";
-                    break;
-                case Type boolType when boolType == typeof(Boolean):
-                    typeString = "bool";
-                    break;
-                case Type doubleType when doubleType == typeof(Double):
-                    typeString = "double";
-                    break;
-                case Type listType when listType == typeof(IReadOnlyList<string>):
-                    typeString = "IReadOnlyList<string>";
-                    break;
-                case Type floatType when floatType == typeof(float):
-                    typeString = "float";
-                    break;
-                case Type ipType when ipType == typeof(IPAddress):
-                    typeString = "IPAddress";
-                    break;
-                case Type javaScriptType when javaScriptType == typeof(JavaScript):
-                    typeString = "JavaScript";
-                    break;
-                case Type stringType when stringType == typeof(String):
-                default:
-                    typeString = "string";
-                    break;
-            }
-
+                // Keep the branches in sync with [JavaClassBuilder] !!
+                Type intType when intType == typeof(Int32) => "int",
+                Type boolType when boolType == typeof(Boolean) => "bool",
+                Type doubleType when doubleType == typeof(Double) => "double",
+                Type listType when listType == typeof(IReadOnlyList<string>) => "IReadOnlyList<string>",
+                Type floatType when floatType == typeof(float) => "float",
+                Type ipType when ipType == typeof(IPAddress) => "IPAddress",
+                Type javaScriptType when javaScriptType == typeof(JavaScript) => "JavaScript",
+                _ => "string",
+            };
             return formatType(typeString);
         }
 
