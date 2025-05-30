@@ -1,5 +1,6 @@
 ﻿using FiftyOne.DeviceDetection.Hash.Engine.OnPremise.FlowElements;
 using PropertyGenerator;
+using System.Xml.Linq;
 
 namespace PropertyGenerationTool
 {
@@ -34,34 +35,35 @@ namespace PropertyGenerationTool
                 "\t/// This includes the hardware, operating system and browser as\n" +
                 "\t/// well as crawler details if the request actually came from a \n" +
                 "\t/// bot or other automated system.";
+
             builder.BuildInterface(
-                "IDeviceData",
-                _copyright,
-                interfaceDescription,
-                "FiftyOne.DeviceDetection",
-                new string[]
-                {
-                    "FiftyOne.Pipeline.Core.Data.Types"
-                },
-                _engine.Properties.ToArray(),
-                (s) => $"IAspectPropertyValue<{s}>",
-                basePath + "/IDeviceData.cs");
+                name: "IDeviceData",
+                copyright: _copyright,
+                description: interfaceDescription,
+                nameSpace: "FiftyOne.DeviceDetection",
+                includes: [
+                    "FiftyOne.Pipeline.Core.Data.Types",
+                ],
+                properties: _engine.Properties.ToArray(),
+                formatType: (s) => $"IAspectPropertyValue<{s}>",
+                outputPath: basePath + "/IDeviceData.cs");
+
             Console.WriteLine(String.Format(
                 "Building DeviceDataBase.cs in '{0}'.",
                 new DirectoryInfo(basePath).FullName));
+
             builder.BuildClass(
-                "DeviceDataBase",
-                "IDeviceData",
-                _copyright,
-                classDescription,
-                "FiftyOne.DeviceDetection.Shared",
-                new string[]
-                {
-                    "FiftyOne.Pipeline.Core.Data.Types"
-                },
-                _engine.Properties.ToArray(),
-                (s) => $"IAspectPropertyValue<{s}>",
-                basePath + "/DeviceDataBase.cs");
+                name: "DeviceDataBase",
+                interfaceName: "IDeviceData",
+                copyright: _copyright,
+                description: classDescription,
+                nameSpace: "FiftyOne.DeviceDetection.Shared",
+                includes: [
+                    "FiftyOne.Pipeline.Core.Data.Types",
+                ],
+                properties: _engine.Properties.ToArray(),
+                formatType: (s) => $"IAspectPropertyValue<{s}>",
+                outputPath: basePath + "/DeviceDataBase.cs");
         }
 
         public override void BuildJava(string basePath)
@@ -71,32 +73,36 @@ namespace PropertyGenerationTool
                 new DirectoryInfo(basePath).FullName));
             Directory.CreateDirectory(basePath);
             var builder = new EngineJavaClassBuilder();
+
             builder.BuildInterface(
-                "DeviceData",
-                _copyright,
-                "fiftyone.devicedetection.shared",
+                name: "DeviceData",
+                copyright: _copyright,
+                description: 
                 " * Interface exposing typed accessors for properties related to a device\n" +
-                " * returned by a device detection engine.",
-                [
+                " * returned by a device detection engine.", 
+                package: "fiftyone.devicedetection.shared",
+                imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],
-                _engine.Properties.ToArray(),
-                (s) => $"AspectPropertyValue<{s}>",
-                basePath + "/DeviceData.java");
+                properties: _engine.Properties.ToArray(),
+                formatType: (s) => $"AspectPropertyValue<{s}>",
+                outputPath: basePath + "/DeviceData.java");
+
             Console.WriteLine(String.Format(
                 "Building DeviceDataBase.java for in '{0}'.",
                 new DirectoryInfo(basePath).FullName));
+
             builder.BuildClass(
-                "DeviceDataBase",
-                "DeviceData",
-                _copyright,
-                "fiftyone.devicedetection.shared",
-                [
+                name: "DeviceDataBase",
+                interfaceName: "DeviceData",
+                copyright: _copyright,
+                package: "fiftyone.devicedetection.shared",
+                imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],
-                _engine.Properties.ToArray(),
-                (s) => $"AspectPropertyValue<{s}>",
-                basePath + "/DeviceDataBase.java");
+                properties: _engine.Properties.ToArray(),
+                formatType: (s) => $"AspectPropertyValue<{s}>",
+                outputPath: basePath + "/DeviceDataBase.java");
         }
     }
 }
