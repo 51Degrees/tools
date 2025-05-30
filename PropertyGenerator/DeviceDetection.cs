@@ -75,6 +75,8 @@ namespace PropertyGenerationTool
                 "DeviceData",
                 _copyright,
                 "fiftyone.devicedetection.shared",
+                " * Interface exposing typed accessors for properties related to a device\n" +
+                " * returned by a device detection engine.",
                 [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],

@@ -86,6 +86,7 @@ namespace PropertyGenerationTool
         internal void BuildInterface(
             string name,
             string copyright,
+            string description,
             string package,
             IEnumerable<string> imports,
             T[] properties,
@@ -109,9 +110,7 @@ namespace PropertyGenerationTool
                 writer.WriteLine("// This interface sits at the top of the name space in order to make");
                 writer.WriteLine("// life easier for consumers.");
                 writer.WriteLine("/**");
-                // TODO
-                writer.WriteLine(" * Interface exposing typed accessors for properties related to a device");
-                writer.WriteLine(" * returned by a device detection engine.");
+                writer.WriteLine(description);
                 writer.WriteLine(" */");
                 writer.WriteLine($"public interface {name} extends AspectData");
                 writer.WriteLine("{");
