@@ -2,6 +2,7 @@
 using FiftyOne.MetaData.Entities;
 using FiftyOne.Pipeline.Core.Data.Types;
 using FiftyOne.Pipeline.Engines.FiftyOne.Data;
+using PropertyGenerationTool;
 using PropertyGenerator;
 using System;
 using System.Collections.Generic;
@@ -11,57 +12,16 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PropertyGenerationTool
+namespace PropertyGenerator.Builders
 {
-    /// <summary>
-    /// Engine based implementation of JavaClassBuilder.
-    /// This uses property metdata from an engine to get the properties.
-    /// </summary>
-    internal class EngineJavaClassBuilder : JavaClassBuilder<IFiftyOneAspectPropertyMetaData>
-    {
-        protected override string GetPropertyDescription(IFiftyOneAspectPropertyMetaData property)
-        {
-            return property.Description;
-        }
-
-        protected override string GetPropertyName(IFiftyOneAspectPropertyMetaData property)
-        {
-            return property.Name;
-        }
-
-        protected override Type GetPropertyType(IFiftyOneAspectPropertyMetaData property)
-        {
-            return property.Type;
-        }
-    }
-
     /// <summary>
     /// Class builder for Java.
     /// Methods for getting info from a property are extracted so that the
     /// class is not tied to the type of property.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal abstract class JavaClassBuilder<T> : ClassBuilderBase<T>
+    abstract class JavaClassBuilderBase<T> : ClassBuilderBase<T>
     {
-        internal string GetReturnType(
-            T property,
-            Func<string, string> formatType)
-        {
-            string typeString = GetPropertyType(property) switch
-            {
-                // Keep the branches in sync with [CSClassBuilder] !!
-                Type intType when intType == typeof(Int32) => "Integer",
-                Type boolType when boolType == typeof(Boolean) => "Boolean",
-                Type doubleType when doubleType == typeof(Double) => "Double",
-                Type listType when listType == typeof(IReadOnlyList<string>) => "List<String>",
-                Type floatType when floatType == typeof(float) => "Float",
-                Type ipType when ipType == typeof(IPAddress) => "InetAddress",
-                Type javaScriptType when javaScriptType == typeof(JavaScript) => "JavaScript",
-                _ => "String",
-            };
-            return formatType(typeString);
-        }
-
         internal string GetGetterName(T property)
         {
             return "get" + GetPropertyName(property)
@@ -74,12 +34,10 @@ namespace PropertyGenerationTool
             return $"((String)this.getWithCheck(\"{GetPropertyName(property).ToLower()}\"))";
         }
 
-        internal string GetGetter(
-            T property,
-            Func<string, string> formatType)
+        internal string GetGetter(T property)
         {
-            var type = GetReturnType(property, formatType);
-            var parts = type.Split(new[] { '<', '>', ','}, StringSplitOptions.RemoveEmptyEntries);
+            var type = GetPropertyType(property);
+            var parts = type.Split(new[] { '<', '>', ',' }, StringSplitOptions.RemoveEmptyEntries);
             return $"public {type} {GetGetterName(property)}() {{ return getAs(\"{GetPropertyName(property).ToLower()}\", {string.Join(", ", parts.Select(p => p + ".class"))}); }}";
         }
 
@@ -90,7 +48,6 @@ namespace PropertyGenerationTool
             string package,
             IEnumerable<string> imports,
             T[] properties,
-            Func<string, string> formatType,
             string outputPath)
         {
             using (var outputStream = new FileStream(outputPath, FileMode.Create))
@@ -122,7 +79,7 @@ namespace PropertyGenerationTool
                     writer.WriteLine("\t * " + GetPropertyDescription(property));
                     writer.WriteLine("\t */");
                     writer.WriteLine("\t{0} {1}();",
-                        GetReturnType(property, formatType),
+                        GetPropertyType(property),
                         GetGetterName(property));
                 }
 
@@ -137,7 +94,6 @@ namespace PropertyGenerationTool
             string package,
             IEnumerable<string> imports,
             T[] properties,
-            Func<string, string> formatType,
             string outputPath)
         {
             using (var outputStream = new FileStream(outputPath, FileMode.Create))
@@ -188,7 +144,7 @@ namespace PropertyGenerationTool
                     writer.WriteLine("\t */");
                     writer.WriteLine("\t@SuppressWarnings(\"unchecked\")");
                     writer.WriteLine("\t@Override");
-                    writer.WriteLine("\t" + GetGetter(property, formatType));
+                    writer.WriteLine("\t" + GetGetter(property));
                 }
                 writer.WriteLine("}");
             }

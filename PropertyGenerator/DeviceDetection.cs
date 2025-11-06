@@ -1,5 +1,7 @@
 ﻿using FiftyOne.DeviceDetection.Hash.Engine.OnPremise.FlowElements;
+using FiftyOne.MetaData.Entities;
 using PropertyGenerator;
+using PropertyGenerator.Builders;
 using System.Xml.Linq;
 
 namespace PropertyGenerationTool
@@ -9,12 +11,12 @@ namespace PropertyGenerationTool
     /// </summary>
     public class DeviceDetection : GeneratorBase
     {
-        private readonly DeviceDetectionHashEngine _engine;
+        private readonly MetaData _metaData;
         private readonly string _copyright;
 
-        public DeviceDetection(DeviceDetectionHashEngine engine)
+        public DeviceDetection(MetaData metaData)
         {
-            _engine = engine;
+            _metaData = metaData;
             _copyright = ReadCopyright();
         }
 
@@ -24,7 +26,7 @@ namespace PropertyGenerationTool
                 "Building IDeviceData in '{0}'.",
                 new DirectoryInfo(basePath).FullName));
             Directory.CreateDirectory(basePath);
-            var builder = new EngineCSClassBuilder();
+            var builder = new MetaDataCSClassBuilder();
             var interfaceDescription =
                 "\t/// Represents a data object containing values relating to a device.\n" +
                 "\t/// This includes the hardware, operating system and browser as\n" + 
@@ -44,8 +46,12 @@ namespace PropertyGenerationTool
                 includes: [
                     "FiftyOne.Pipeline.Core.Data.Types",
                 ],
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"IAspectPropertyValue<{s}>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "DeviceDetection")
+                    .Products
+                    .SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/IDeviceData.cs");
 
             Console.WriteLine(String.Format(
@@ -61,8 +67,12 @@ namespace PropertyGenerationTool
                 includes: [
                     "FiftyOne.Pipeline.Core.Data.Types",
                 ],
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"IAspectPropertyValue<{s}>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "DeviceDetection")
+                    .Products
+                    .SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/DeviceDataBase.cs");
         }
 
@@ -72,7 +82,7 @@ namespace PropertyGenerationTool
                 "Building DeviceData.java for in '{0}'.",
                 new DirectoryInfo(basePath).FullName));
             Directory.CreateDirectory(basePath);
-            var builder = new EngineJavaClassBuilder();
+            var builder = new MetaDataJavaClassBuilder();
 
             builder.BuildInterface(
                 name: "DeviceData",
@@ -84,8 +94,12 @@ namespace PropertyGenerationTool
                 imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"AspectPropertyValue<{s}>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "DeviceDetection")
+                    .Products
+                    .SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/DeviceData.java");
 
             Console.WriteLine(String.Format(
@@ -100,8 +114,12 @@ namespace PropertyGenerationTool
                 imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"AspectPropertyValue<{s}>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "DeviceDetection")
+                    .Products
+                    .SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/DeviceDataBase.java");
         }
     }
