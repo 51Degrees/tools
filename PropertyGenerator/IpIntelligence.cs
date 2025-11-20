@@ -2,6 +2,8 @@
 using FiftyOne.MetaData.Entities;
 using FiftyOne.MetaData.Services;
 using PropertyGenerationTool;
+using PropertyGenerator.Builders;
+using System.Collections.Immutable;
 
 namespace PropertyGenerator
 {
@@ -11,13 +13,13 @@ namespace PropertyGenerator
     internal class IpIntelligence : GeneratorBase
     {
         private readonly string _copyright;
-        private readonly IpiOnPremiseEngine _engine;
+        private readonly MetaData _metaData;
         private readonly IReadOnlyCollection<IPropertyMetaData> _properties;
 
-        public IpIntelligence(IpiOnPremiseEngine engine)
+        public IpIntelligence(MetaData metaData)
         {
+            _metaData = metaData;
             _copyright = ReadCopyright();
-            _engine = engine;
         }
 
         public override void BuildCSharp(string basePath)
@@ -34,7 +36,7 @@ namespace PropertyGenerator
                 "\t/// Abstract base class for properties relating to an IP.\n" +
                 "\t/// This includes the network, and location.";
 
-            var builder = new EngineCSClassBuilder();
+            var builder = new MetaDataCSClassBuilder();
 
             builder.BuildInterface(
                 name: "IIpIntelligenceData",
@@ -44,8 +46,11 @@ namespace PropertyGenerator
                 includes: [
                     "System.Net",
                 ],
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"IAspectPropertyValue<IReadOnlyList<IWeightedValue<{s}>>>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "IpIntelligence")
+                    .Products.SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/IIpIntelligenceData.cs");
 
             Console.WriteLine(String.Format(
@@ -61,8 +66,11 @@ namespace PropertyGenerator
                 includes: [
                     "System.Net",
                 ],
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"IAspectPropertyValue<IReadOnlyList<IWeightedValue<{s}>>>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "IpIntelligence")
+                    .Products.SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/IpIntelligenceDataBase.cs");
         }
 
@@ -76,7 +84,7 @@ namespace PropertyGenerator
                 "Building IPIntelligenceData.java for in '{0}'.",
                 new DirectoryInfo(basePath).FullName));
             Directory.CreateDirectory(basePath);
-            var builder = new EngineJavaClassBuilder();
+            var builder = new MetaDataJavaClassBuilder();
 
             builder.BuildInterface(
                 name: "IPIntelligenceData",
@@ -86,8 +94,11 @@ namespace PropertyGenerator
                 " * This includes the network, and location.",
                 package: "fiftyone.ipintelligence.shared",
                 imports: imports,
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "IpIntelligence")
+                    .Products.SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/IPIntelligenceData.java");
 
             Console.WriteLine(String.Format(
@@ -100,8 +111,11 @@ namespace PropertyGenerator
                 copyright: _copyright,
                 package: "fiftyone.ipintelligence.shared",
                 imports: imports,
-                properties: _engine.Properties.ToArray(),
-                formatType: (s) => $"AspectPropertyValue<List<IWeightedValue<{s}>>>",
+                properties: _metaData.EngineProducts
+                    .Single(i => i.Name == "IpIntelligence")
+                    .Products.SelectMany(i => i.Properties)
+                    .DistinctBy(i => i.Name)
+                    .ToArray(),
                 outputPath: basePath + "/IPIntelligenceDataBase.java");
         }
     }

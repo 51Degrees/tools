@@ -1,6 +1,7 @@
 param (
     [Parameter(Mandatory)][string]$RepoName,
-    [Parameter(Mandatory)][string]$DataFile
+    [Parameter(Mandatory)][string]$DataType,
+    [Parameter(Mandatory)][string]$MetaDataPath
 )
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
@@ -12,7 +13,8 @@ try {
     # from the IpIntelligence package and fails
     # it is supposed to build on ubuntu-latest x64, so this should work
     dotnet build -c:Release -p:Platform=x64
-    dotnet "$(find ./bin -name PropertyGenerator.dll | head -n 1)" "$DataFile" ..
+
+    dotnet "$(find ./bin -name PropertyGenerator.dll | head -n 1)" "$DataType" .. "$MetaDataPath"
 } finally {
     Pop-Location
 }

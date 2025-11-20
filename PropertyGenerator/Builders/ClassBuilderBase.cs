@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PropertyGenerationTool
+namespace PropertyGenerator.Builders
 {
     /// <summary>
     /// Abstract base class for buiding class files.
@@ -13,7 +13,7 @@ namespace PropertyGenerationTool
     /// The type of property which is read. This can be from an engine,
     /// or metadata.
     /// </typeparam>
-    internal abstract class ClassBuilderBase<T>
+    abstract class ClassBuilderBase<T>
     {
         /// <summary>
         /// Get the name of the property.
@@ -23,11 +23,12 @@ namespace PropertyGenerationTool
         protected abstract string GetPropertyName(T property);
 
         /// <summary>
-        /// Get the type of the property.
+        /// Get the type of the property as a string for the language being
+        /// generated.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        protected abstract Type GetPropertyType(T property);
+        protected abstract string GetPropertyType(T property);
 
         /// <summary>
         /// Get the description from the property.

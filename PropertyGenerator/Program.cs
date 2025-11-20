@@ -9,47 +9,46 @@ using Microsoft.Extensions.Logging;
 using FiftyOne.Pipeline.Engines;
 using PropertyGenerator;
 using FiftyOne.IpIntelligence.Engine.OnPremise.FlowElements;
+using FiftyOne.MetaData.Entities;
+using FiftyOne.MetaData.Services;
 
 namespace PropertyGenerationTool
 {
     class Program
     {
+        private const string IPI = "IpIntelligence";
+        private const string DD = "HashV41";
+
         private static ILoggerFactory LoggerFactory = new LoggerFactory();
 
         static void Main(string[] args)
         {
-            if (args[0].EndsWith(".hash"))
+            var metaData = args.Length > 2 ?
+                new MetaDataService(new FileResourceService(args[2])).GetMetaData() :
+                new MetaDataService().GetMetaData();
+
+            if (args[0].Equals(DD, StringComparison.InvariantCultureIgnoreCase))
             {
-                using (var engine = new DeviceDetectionHashEngineBuilder(LoggerFactory)
-                    .SetAutoUpdate(false)
-                    .SetDataFileSystemWatcher(false)
-                    .SetPerformanceProfile(PerformanceProfiles.HighPerformance)
-                    .Build(args[0], false))
-                {
-                    var deviceDetection = new DeviceDetection(engine);
-                    // C#.
-                    deviceDetection.BuildCSharp(Path.Combine(args[1], "CSharp"));
-                    // Java.
-                    deviceDetection.BuildJava(Path.Combine(args[1], "Java"));
-                }
+                var deviceDetection = new DeviceDetection(metaData);
+                // C#.
+                deviceDetection.BuildCSharp(Path.Combine(args[1], "CSharp"));
+                // Java.
+                deviceDetection.BuildJava(Path.Combine(args[1], "Java"));
                 Console.WriteLine("Done Device Detection.");
             }
-            else if (args[0].EndsWith(".ipi"))
+            else if (args[0].Equals(IPI, StringComparison.InvariantCultureIgnoreCase))
             {
-                using (var engine = new IpiOnPremiseEngineBuilder(LoggerFactory)
-                    .SetAutoUpdate(false)
-                    .SetDataFileSystemWatcher(false)
-                    .SetDataUpdateOnStartup(false)
-                    .SetPerformanceProfile(PerformanceProfiles.HighPerformance)
-                    .Build(args[0], false))
-                {
-                    var ipIntelligence = new IpIntelligence(engine);
-                    // C#
-                    ipIntelligence.BuildCSharp(Path.Combine(args[1], "CSharp"));
-                    // Java
-                    ipIntelligence.BuildJava(Path.Combine(args[1], "Java"));
-                    Console.WriteLine("Done IP Intelligence");
-                }
+                var ipIntelligence = new IpIntelligence(metaData);
+                // C#
+                ipIntelligence.BuildCSharp(Path.Combine(args[1], "CSharp"));
+                // Java
+                ipIntelligence.BuildJava(Path.Combine(args[1], "Java"));
+                Console.WriteLine("Done IP Intelligence");
+            }
+            else
+            {
+                throw new ArgumentException($"Data type {args[0]} not supported." +
+                    $"Use either {DD} or {IPI}");
             }
         }
     }
