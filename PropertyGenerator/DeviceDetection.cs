@@ -46,12 +46,7 @@ namespace PropertyGenerationTool
                 includes: [
                     "FiftyOne.Pipeline.Core.Data.Types",
                 ],
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "DeviceDetection")
-                    .Products
-                    .SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/IDeviceData.cs");
 
             Console.WriteLine(String.Format(
@@ -67,12 +62,7 @@ namespace PropertyGenerationTool
                 includes: [
                     "FiftyOne.Pipeline.Core.Data.Types",
                 ],
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "DeviceDetection")
-                    .Products
-                    .SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/DeviceDataBase.cs");
         }
 
@@ -94,12 +84,7 @@ namespace PropertyGenerationTool
                 imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "DeviceDetection")
-                    .Products
-                    .SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/DeviceData.java");
 
             Console.WriteLine(String.Format(
@@ -114,13 +99,19 @@ namespace PropertyGenerationTool
                 imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
                 ],
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "DeviceDetection")
-                    .Products
-                    .SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/DeviceDataBase.java");
+        }
+
+        private IPropertyMetaData[] GetProperties()
+        {
+            return _metaData.EngineProducts
+                .Single(i => i.Name == "DeviceDetection")
+                .Products
+                .SelectMany(i => i.Properties)
+                .Union(_metaData.ComponentProperties.Single(c => c.Name == "Metrics").Properties)
+                .DistinctBy(i => i.Name)
+                .ToArray();
         }
     }
 }
