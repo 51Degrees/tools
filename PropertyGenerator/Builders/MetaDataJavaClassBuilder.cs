@@ -43,10 +43,11 @@ namespace PropertyGenerator.Builders
             {
                 type = $"List<{type}>";
             }
-            if (property.IsWeighted)
-            {
-                type = $"List<IWeightedValue<{type}>>";
-            }
+            // TODO: Uncomment when IsWeighted is added to FiftyOne.MetaData package
+            // if (property.IsWeighted)
+            // {
+            //     type = $"List<IWeightedValue<{type}>>";
+            // }
 
             return $"AspectPropertyValue<{type}>";
         }

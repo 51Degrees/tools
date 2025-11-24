@@ -43,10 +43,11 @@ namespace PropertyGenerator.Builders
             {
                 coreType = $"IReadOnlyList<{coreType}>";
             }
-            if (property.IsWeighted)
-            {
-                coreType = $"IReadOnlyList<IWeightedValue<{coreType}>>";
-            }
+            // TODO: Uncomment when IsWeighted is added to FiftyOne.MetaData package
+            // if (property.IsWeighted)
+            // {
+            //     coreType = $"IReadOnlyList<IWeightedValue<{coreType}>>";
+            // }
 
             return $"IAspectPropertyValue<{coreType}>";
         }
