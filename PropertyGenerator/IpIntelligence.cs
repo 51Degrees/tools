@@ -79,6 +79,7 @@ namespace PropertyGenerator
             IEnumerable<string> imports = [
                 "java.net.InetAddress",
                 "fiftyone.pipeline.core.data.IWeightedValue",
+                "fiftyone.pipeline.core.data.WktString",
             ];
             Console.WriteLine(String.Format(
                 "Building IPIntelligenceData.java for in '{0}'.",
