@@ -1,10 +1,8 @@
-
 param (
-    [string]$RepoName,
-    [Parameter(Mandatory=$true)]
     [string]$DeviceDetectionKey,
     [string]$DeviceDetectionUrl
 )
+$ErrorActionPreference = 'Stop'
 
-# Fetch the TAC data file for building with
-./steps/fetch-hash-assets.ps1 -RepoName $RepoName -LicenseKey $DeviceDetectionKey -Url $DeviceDetectionUrl
+./steps/fetch-assets.ps1 -DeviceDetection:$DeviceDetection -DeviceDetectionUrl:$DeviceDetectionUrl -Assets 'TAC-HashV41.hash'
+New-Item -ItemType SymbolicLink -Force -Target "$PWD/assets/TAC-HashV41.hash" -Path "$PSScriptRoot/../TAC-HashV41.hash"
