@@ -68,7 +68,6 @@ namespace CopyrightUpdater
 
 
             Console.WriteLine("Done");
-            Console.ReadKey();
         }
 
         static bool InDir(DirectoryInfo dir, string dirName)
@@ -85,7 +84,7 @@ namespace CopyrightUpdater
             {
                 throw new Exception($"Could not find any configurations for directory '{dir.Name}'. " +
                     $"Directory must contain one of the following substrings: " +
-                    $"{string.Join(",", config.directoryConfigs.Select(c => c.directoryKey))}");    
+                    $"{string.Join(",", config.directoryConfigs.Select(c => c.directoryKey))}");
             }
             else if(result.Count() > 1)
             {
@@ -237,9 +236,9 @@ namespace CopyrightUpdater
                             }
                             else
                             {
-                                // We have an existing license comment but it 
+                                // We have an existing license comment but it
                                 // doesn't match so replace it with the correct one.
-                                var temp = Path.GetTempFileName();
+                                var temp = file.FullName + ".COPYRIGHT.TEMP";
                                 File.WriteAllText(temp, File.ReadAllText(file.FullName).Replace(commentText, newComment));
                                 File.Replace(temp, file.FullName, null);
                                 Interlocked.Increment(ref updated);
@@ -252,7 +251,7 @@ namespace CopyrightUpdater
                         if (enforce)
                         {
                             Interlocked.Increment(ref added);
-                            var temp = Path.GetTempFileName();
+                            var temp = file.FullName + ".COPYRIGHT.TEMP";
 
                             if (file.Extension == ".php")
                             {
@@ -264,7 +263,7 @@ namespace CopyrightUpdater
                                 File.WriteAllText(temp, newComment + "\n\n" + File.ReadAllText(file.FullName));
                             }
                             File.Replace(temp, file.FullName, null);
-                        } 
+                        }
                     }
 
                     if(enforce == false &&
@@ -343,7 +342,7 @@ namespace CopyrightUpdater
             return newComment;
         }
 
-        private static IEnumerable<FileInfo> GetFiles(DirectoryInfo dir, 
+        private static IEnumerable<FileInfo> GetFiles(DirectoryInfo dir,
             IEnumerable<string> dirsToIgnore, DirectoryConfig dirConfig, Config config)
         {
             var files = dir.EnumerateFiles("*", SearchOption.AllDirectories);
