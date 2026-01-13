@@ -14,6 +14,7 @@ namespace CopyrightUpdater
         public string licenseText { get; set; }
         public string hashLicenseText { get; set; }
         public string patternLicenseText { get; set; }
+        public string ipgraphLicenseText { get; set; }
     }
 
     public class DirectoryConfig
