@@ -17,6 +17,7 @@ $repos = @(
     'device-detection-php-onpremise'
     'device-detection-python'
     'internal-common-dotnet'
+    'ip-graph-cxx'
     'ip-intelligence-cxx'
     'ip-intelligence-dotnet'
     'ip-intelligence-dotnet-examples'

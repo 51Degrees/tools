@@ -218,6 +218,10 @@ namespace CopyrightUpdater
                             {
                                 newComment = String.Format(config.hashLicenseText, DateTime.Now.Year);
                             }
+                            else if (commentText.Contains("2506025.2"))
+                            {
+                                newComment = String.Format(config.ipgraphLicenseText, DateTime.Now.Year);
+                            }
                             else
                             {
                                 Interlocked.Increment(ref unknownpatent);
