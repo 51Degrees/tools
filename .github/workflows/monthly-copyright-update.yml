@@ -1,0 +1,16 @@
+name: Monthly Copyright Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  UpdateCopyrights:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - env:
+          GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: exec pwsh CopyrightUpdater/update-all-copyrights.ps1 -BaseUri "https://Automation51D:$GH_TOKEN@github.com/51Degrees"
+

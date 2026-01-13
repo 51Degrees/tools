@@ -60,7 +60,7 @@ foreach ($repo in $repos) {
             Write-Host "PR already exists"
         } else {
             Write-Host "Creating PR..."
-            gh pr create -R $fullRepo -H update-copyright -B main --title 'Update copyright' --body 'Update copyright'
+            gh pr create -R $fullRepo -H update-copyright -B main --title 'Update copyright' --body 'Update copyright by https://github.com/51Degrees/tools/tree/main/CopyrightUpdater'
         }
     }
     Remove-Item -Recurse -Force $repo
