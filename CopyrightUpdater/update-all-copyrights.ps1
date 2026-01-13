@@ -43,6 +43,7 @@ foreach ($repo in $repos) {
 
     Write-Host "Updating copyright..."
     dotnet run --project "$PSScriptRoot/CopyrightUpdater.csproj" -- -e $repo
+
     Write-Host "Checking for changes..."
     $changes = git -C $repo status --porcelain --untracked-files=no
     if ($changes) {

@@ -212,11 +212,11 @@ namespace CopyrightUpdater
                         {
                             if (commentText.Contains("2871816"))
                             {
-                                newComment = config.patternLicenseText;
+                                newComment = String.Format(config.patternLicenseText, DateTime.Now.Year);
                             }
                             else if (commentText.Contains("3438848"))
                             {
-                                newComment = config.hashLicenseText;
+                                newComment = String.Format(config.hashLicenseText, DateTime.Now.Year);
                             }
                             else
                             {
@@ -255,7 +255,7 @@ namespace CopyrightUpdater
 
                             if (file.Extension == ".php")
                             {
-                                File.WriteAllText(temp, "<?php" + "\n" + config.licenseText + "\n\n" + File.ReadAllText(file.FullName).Replace("<?php", ""));
+                                File.WriteAllText(temp, "<?php" + "\n" + String.Format(config.licenseText, DateTime.Now.Year) + "\n\n" + File.ReadAllText(file.FullName).Replace("<?php", ""));
                             }
                             else
                             {
@@ -327,7 +327,7 @@ namespace CopyrightUpdater
 
         private static string GetCorrectComment(Config config, string filename, string directoryKey)
         {
-            var newComment = config.licenseText;
+            var newComment = String.Format(config.licenseText, DateTime.Now.Year);
             if (filename.EndsWith(".cshtml"))
             {
                 newComment = newComment.Replace("/*", "@*");
