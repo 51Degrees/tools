@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PropertyGenerator
@@ -32,18 +33,18 @@ namespace PropertyGenerator
         }
 
         /// <summary>
-        /// Reads the text from the text file located in the project's folder and returns a string 
+        /// Reads the text from the JSON file located in the CopyrightUpdater's folder and returns a string
         /// </summary>
         /// <returns></returns>
         protected static string ReadCopyright()
         {
             try
             {
-                var path = Path.Combine(AppContext.BaseDirectory, "Copyright.txt");
-                using (var reader = new StreamReader(path))
-                {
-                    return reader.ReadToEnd();
-                }
+                // NOTE: this assumes the tool runs from it's source directory, which it currently does:
+                var path = Path.Combine(Environment.CurrentDirectory, "..", "CopyrightUpdater", "appsettings.json");
+                var format = JsonDocument.Parse(File.ReadAllText(path)).RootElement.GetProperty("licenseText").GetString()
+                    ?? throw new InvalidDataException("Unexpected appsettings at " + path);
+                return String.Format(format, DateTime.Now.Year);
             }
             catch (IOException e)
             {

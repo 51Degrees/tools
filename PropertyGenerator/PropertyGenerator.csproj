@@ -12,12 +12,5 @@
     <PackageReference Include="FiftyOne.IpIntelligence.Engine.OnPremise" Version="4.5.0-alpha.50" />
     <PackageReference Include="FiftyOne.MetaData" Version="5.0.84" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Content Include="..\Copyright.txt">
-      <Link>Copyright.txt</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
 </Project>
