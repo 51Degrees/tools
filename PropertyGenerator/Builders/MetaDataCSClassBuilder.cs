@@ -41,6 +41,7 @@ namespace PropertyGenerator.Builders
                 ValueTypeEnum.WeightedDouble => "IReadOnlyList<IWeightedValue<double>>",
                 ValueTypeEnum.WeightedSingle => "IReadOnlyList<IWeightedValue<float>>",
                 ValueTypeEnum.WeightedBool => "IReadOnlyList<IWeightedValue<bool>>",
+                ValueTypeEnum.WeightedByte => "IReadOnlyList<IWeightedValue<byte[]>>",
                 ValueTypeEnum.WeightedIp => "IReadOnlyList<IWeightedValue<IPAddress>>",
                 ValueTypeEnum.WeightedWKBR => "IReadOnlyList<IWeightedValue<WktString>>",
 
