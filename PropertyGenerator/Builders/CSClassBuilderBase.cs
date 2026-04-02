@@ -187,7 +187,9 @@ namespace PropertyGenerator.Builders
                 writer.WriteLine("\t\t\t};");
                 writer.WriteLine("");
 
-                foreach (var property in properties)
+                foreach (var property in properties
+                    .Where(p => Constants.excludedProperties.Contains(GetPropertyName(p)) == false)
+                    .OrderBy(GetPropertyName))
                 {
                     writer.WriteLine("\t\t/// <summary>");
                     writer.WriteLine("\t\t/// " + GetDescription(property));

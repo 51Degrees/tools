@@ -109,13 +109,22 @@ namespace PropertyGenerationTool
             ProductEnum.V4Free,
         ];
 
+        private static readonly string[] AdditionalPropertyNames = [
+            "Profiles"
+        ];
+
         private IPropertyMetaData[] GetProperties()
         {
+            var additionalProperties = _metaData.ComponentProperties
+                .SelectMany(c => c.Properties)
+                .Where(p => AdditionalPropertyNames.Contains(p.Name));
+
             return _metaData.EngineProducts
                 .SelectMany(e => e.Products)
                 .Where(p => DdProducts.Contains(p.Product))
                 .SelectMany(p => p.Properties)
                 .Union(_metaData.ComponentProperties.Single(c => c.Name == "Metrics").Properties)
+                .Union(additionalProperties)
                 .DistinctBy(i => i.Name)
                 .ToArray();
         }
