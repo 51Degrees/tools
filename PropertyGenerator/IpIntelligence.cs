@@ -46,11 +46,7 @@ namespace PropertyGenerator
                 includes: [
                     "System.Net",
                 ],
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "IpIntelligence")
-                    .Products.SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/IIpIntelligenceData.cs");
 
             Console.WriteLine(String.Format(
@@ -66,11 +62,7 @@ namespace PropertyGenerator
                 includes: [
                     "System.Net",
                 ],
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "IpIntelligence")
-                    .Products.SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/IpIntelligenceDataBase.cs");
         }
 
@@ -95,11 +87,7 @@ namespace PropertyGenerator
                 " * This includes the network, and location.",
                 package: "fiftyone.ipintelligence.shared",
                 imports: imports,
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "IpIntelligence")
-                    .Products.SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/IPIntelligenceData.java");
 
             Console.WriteLine(String.Format(
@@ -112,12 +100,23 @@ namespace PropertyGenerator
                 copyright: _copyright,
                 package: "fiftyone.ipintelligence.shared",
                 imports: imports,
-                properties: _metaData.EngineProducts
-                    .Single(i => i.Name == "IpIntelligence")
-                    .Products.SelectMany(i => i.Properties)
-                    .DistinctBy(i => i.Name)
-                    .ToArray(),
+                properties: GetProperties(),
                 outputPath: basePath + "/IPIntelligenceDataBase.java");
+        }
+
+        private static readonly ProductEnum[] IpiProducts = [
+            ProductEnum.IPIV4Enterprise,
+            ProductEnum.IPIV4Lite,
+        ];
+
+        private IPropertyMetaData[] GetProperties()
+        {
+            return _metaData.EngineProducts
+                .SelectMany(e => e.Products)
+                .Where(p => IpiProducts.Contains(p.Product))
+                .SelectMany(p => p.Properties)
+                .DistinctBy(i => i.Name)
+                .ToArray();
         }
     }
 }

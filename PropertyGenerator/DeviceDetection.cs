@@ -103,12 +103,18 @@ namespace PropertyGenerationTool
                 outputPath: basePath + "/DeviceDataBase.java");
         }
 
+        private static readonly ProductEnum[] DdProducts = [
+            ProductEnum.V4Enterprise,
+            ProductEnum.V4TAC,
+            ProductEnum.V4Free,
+        ];
+
         private IPropertyMetaData[] GetProperties()
         {
             return _metaData.EngineProducts
-                .Single(i => i.Name == "DeviceDetection")
-                .Products
-                .SelectMany(i => i.Properties)
+                .SelectMany(e => e.Products)
+                .Where(p => DdProducts.Contains(p.Product))
+                .SelectMany(p => p.Properties)
                 .Union(_metaData.ComponentProperties.Single(c => c.Name == "Metrics").Properties)
                 .DistinctBy(i => i.Name)
                 .ToArray();
