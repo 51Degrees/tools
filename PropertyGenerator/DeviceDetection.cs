@@ -119,8 +119,7 @@ namespace PropertyGenerationTool
                 .SelectMany(c => c.Properties)
                 .Where(p => AdditionalPropertyNames.Contains(p.Name));
 
-            return _metaData.EngineProducts
-                .SelectMany(e => e.Products)
+            return _metaData.AllProducts
                 .Where(p => DdProducts.Contains(p.Product))
                 .SelectMany(p => p.Properties)
                 .Union(_metaData.ComponentProperties.Single(c => c.Name == "Metrics").Properties)

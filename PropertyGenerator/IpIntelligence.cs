@@ -111,8 +111,7 @@ namespace PropertyGenerator
 
         private IPropertyMetaData[] GetProperties()
         {
-            return _metaData.EngineProducts
-                .SelectMany(e => e.Products)
+            return _metaData.AllProducts
                 .Where(p => IpiProducts.Contains(p.Product))
                 .SelectMany(p => p.Properties)
                 .DistinctBy(i => i.Name)

@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory)][string]$DataType,
-    [Parameter(Mandatory)][string]$MetaDataPath,
+    $MetaDataPath, # unused, here for compatibility
     $RepoName # unused, here for compatibility
 )
 $ErrorActionPreference = "Stop"
@@ -12,7 +12,7 @@ try {
     # otherwise without passing this argument it tries to infer win-x86
     # from the IpIntelligence package and fails
     # it is supposed to build on ubuntu-latest x64, so this should work
-    dotnet run -c:Release -a:x64 -- "$DataType" .. "$MetaDataPath"
+    dotnet run -c:Release -a:x64 -- "$DataType" ..
 } finally {
     Pop-Location
 }
