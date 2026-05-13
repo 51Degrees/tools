@@ -107,6 +107,13 @@ namespace PropertyGenerator
         private static readonly ProductEnum[] IpiProducts = [
             ProductEnum.IPIV4Enterprise,
             ProductEnum.IPIV4Lite,
+            // CloudV5Basic carries the synthetic Ip / IpV6 echo properties
+            // produced by IpiOnPremiseEngine at runtime. They are not in the
+            // on-prem .ipi data file, so they do not appear on the IPIV4*
+            // products. Including the cloud product here keeps the generated
+            // IIpIntelligenceData accessors in sync with what the engine
+            // exposes via its Properties collection.
+            ProductEnum.CloudV5Basic,
         ];
 
         private IPropertyMetaData[] GetProperties()
