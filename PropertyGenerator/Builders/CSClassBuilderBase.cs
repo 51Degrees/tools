@@ -163,7 +163,7 @@ namespace PropertyGenerator.Builders
                 writer.WriteLine("\t\t/// name of the type.");
                 writer.WriteLine("\t\t/// </summary>");
                 writer.WriteLine("\t\tprotected static readonly IReadOnlyDictionary<string, Type> PropertyTypes =");
-                writer.WriteLine("\t\t\tnew Dictionary<string, Type>()");
+                writer.WriteLine("\t\t\tnew Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)");
                 writer.WriteLine("\t\t\t{");
 
                 var filteredProperties = properties
