@@ -34,6 +34,8 @@ namespace PropertyGenerationTool
                 deviceDetection.BuildCSharp(Path.Combine(args[1], "CSharp"));
                 // Java.
                 deviceDetection.BuildJava(Path.Combine(args[1], "Java"));
+                // Rust
+                deviceDetection.BuildRust(Path.Combine(args[1], "Rust"));
                 Console.WriteLine("Done Device Detection.");
             }
             else if (args[0].Equals(IPI, StringComparison.InvariantCultureIgnoreCase))
@@ -43,6 +45,8 @@ namespace PropertyGenerationTool
                 ipIntelligence.BuildCSharp(Path.Combine(args[1], "CSharp"));
                 // Java
                 ipIntelligence.BuildJava(Path.Combine(args[1], "Java"));
+                // Rust
+                ipIntelligence.BuildRust(Path.Combine(args[1], "Rust"));
                 Console.WriteLine("Done IP Intelligence");
             }
             else
