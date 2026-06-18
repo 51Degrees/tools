@@ -104,6 +104,43 @@ namespace PropertyGenerator
                 outputPath: basePath + "/IPIntelligenceDataBase.java");
         }
 
+        public override void BuildRust(string basePath)
+        {
+            Console.WriteLine(String.Format(
+                "Building ip_intelligence_data.rs in '{0}'.",
+                new DirectoryInfo(basePath).FullName));
+            Directory.CreateDirectory(basePath);
+            var builder = new MetaDataRustClassBuilder();
+
+            builder.Build(
+                copyright: GetCopyright(),
+                traitName: "IpIntelligenceData",
+                moduleDescription:
+                    "Generated strongly-typed read accessors for IP Intelligence.\n" +
+                    "\n" +
+                    "This file is produced by the 51Degrees PropertyGenerator tool from the\n" +
+                    "common metadata. It defines the [`IpIntelligenceData`] trait, one accessor\n" +
+                    "per documented property, and implements it for the hand-written\n" +
+                    "[`IpIntelligenceDataBase`] by delegating to its by-name stores. Plain\n" +
+                    "properties resolve to a single typed value; the weighted properties\n" +
+                    "(the country-code distributions and `Mcc`) resolve to an ordered list of\n" +
+                    "weighted candidates.",
+                traitDescription:
+                    "Strongly-typed read accessors for IP Intelligence properties.\n" +
+                    "\n" +
+                    "Covers the network and location properties of an IP. Each accessor\n" +
+                    "returns an [`AspectPropertyValue`] wrapping the property's value type, so\n" +
+                    "an absent value carries the engine's no-value reason.",
+                uses:
+                [
+                    "fiftyone_pipeline_core::{PropertyValueType, WeightedValue}",
+                    "fiftyone_pipeline_engines::{AspectData, AspectPropertyValue}",
+                    "crate::data::IpIntelligenceDataBase",
+                ],
+                properties: GetProperties(),
+                outputPath: basePath + "/ip_intelligence_data.rs");
+        }
+
         private static readonly ProductEnum[] IpiProducts = [
             ProductEnum.IPIV4Enterprise,
             ProductEnum.IPIV4Lite,

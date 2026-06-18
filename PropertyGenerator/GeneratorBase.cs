@@ -16,6 +16,16 @@ namespace PropertyGenerator
         public abstract void BuildJava(string path);
 
         /// <summary>
+        /// Build the data classes for Rust. The default does nothing so a
+        /// generator that has no Rust target need not implement it; override to
+        /// emit Rust.
+        /// </summary>
+        public virtual void BuildRust(string path)
+        {
+            Console.WriteLine("Rust generation is not implemented for this generator.");
+        }
+
+        /// <summary>
         /// Gets the copyright text + the auto-generation message
         /// </summary>
         protected static string GetCopyright()

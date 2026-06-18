@@ -25,5 +25,11 @@ namespace PropertyGenerator
         /// </summary>
         /// <param name="path"></param>
         void BuildJava(string path);
+        /// <summary>
+        /// Build the data classes for Rust and write the .rs files to the directory
+        /// provided.
+        /// </summary>
+        /// <param name="path"></param>
+        void BuildRust(string path);
     }
 }

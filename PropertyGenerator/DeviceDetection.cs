@@ -103,6 +103,42 @@ namespace PropertyGenerationTool
                 outputPath: basePath + "/DeviceDataBase.java");
         }
 
+        public override void BuildRust(string basePath)
+        {
+            Console.WriteLine(String.Format(
+                "Building device_data.rs in '{0}'.",
+                new DirectoryInfo(basePath).FullName));
+            Directory.CreateDirectory(basePath);
+            var builder = new MetaDataRustDeviceClassBuilder();
+
+            builder.Build(
+                copyright: GetCopyright(),
+                traitName: "DeviceData",
+                moduleDescription:
+                    "Generated strongly-typed read accessors for Device Detection.\n" +
+                    "\n" +
+                    "This file is produced by the 51Degrees PropertyGenerator tool from the\n" +
+                    "common metadata. It defines the [`DeviceData`] trait, one accessor per\n" +
+                    "documented property, and implements it for the hand-written\n" +
+                    "[`DeviceDataBase`] by delegating to its by-name dynamic-bag getters.\n" +
+                    "Each property resolves to a single typed value (or a list for the\n" +
+                    "list-valued properties).",
+                traitDescription:
+                    "Strongly-typed read accessors for Device Detection properties.\n" +
+                    "\n" +
+                    "Covers the hardware, operating system, browser and crawler properties of\n" +
+                    "a device. Each accessor returns an [`AspectPropertyValue`] wrapping the\n" +
+                    "property's value type, so an absent value carries the no-value reason.",
+                uses:
+                [
+                    "fiftyone_pipeline_core::PropertyValueType",
+                    "fiftyone_pipeline_engines::{AspectData, AspectPropertyValue}",
+                    "crate::data::DeviceDataBase",
+                ],
+                properties: GetProperties(),
+                outputPath: basePath + "/device_data.rs");
+        }
+
         private static readonly ProductEnum[] DdProducts = [
             ProductEnum.V4Enterprise,
             ProductEnum.V4TAC,
