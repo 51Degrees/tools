@@ -36,5 +36,33 @@ namespace PropertyGenerator.Builders
         /// <param name="property"></param>
         /// <returns></returns>
         protected abstract string GetPropertyDescription(T property);
+
+        /// <summary>
+        /// Get the page with more information about the property. Returns null
+        /// or an empty string when there is not one, so callers test with
+        /// <see cref="string.IsNullOrWhiteSpace(string)"/>. The default has no
+        /// URL so that a builder whose property type carries none need not
+        /// implement it.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        protected virtual string GetPropertyUrl(T property)
+        {
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Get the values which the property can return, with the meaning of
+        /// each one, for the properties whose values are worth showing to a
+        /// developer. The default documents no values so that a builder whose
+        /// property type carries none need not implement it.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        protected virtual IReadOnlyList<DocumentedValue> GetPropertyValues(
+            T property)
+        {
+            return Array.Empty<DocumentedValue>();
+        }
     }
 }

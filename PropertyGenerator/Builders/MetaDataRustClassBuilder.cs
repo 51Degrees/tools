@@ -16,6 +16,17 @@ namespace PropertyGenerator.Builders
             return property.Name;
         }
 
+        protected override string GetPropertyUrl(IPropertyMetaData property)
+        {
+            return property.Url;
+        }
+
+        protected override IReadOnlyList<DocumentedValue> GetPropertyValues(
+            IPropertyMetaData property)
+        {
+            return PropertyDocumentation.FromMetaData(property);
+        }
+
         protected override string GetPropertyType(IPropertyMetaData property)
         {
             var type = property.ValueType switch

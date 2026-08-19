@@ -78,16 +78,42 @@ namespace PropertyGenerator.Builders
         /// <summary>
         /// The doc text for a property: its metadata description, or a generated
         /// fallback naming the property when the metadata carries no description,
-        /// so the accessor always has a non-empty doc comment.
+        /// so the accessor always has a non-empty doc comment. A link to the page
+        /// with more information, and the table of values the property can
+        /// return, follow the description as separate markdown blocks.
         /// </summary>
         private string PropertyDoc(T property)
         {
             var description = GetPropertyDescription(property);
             if (string.IsNullOrWhiteSpace(description))
             {
-                return $"The `{GetPropertyName(property)}` property.";
+                description = $"The `{GetPropertyName(property)}` property.";
             }
-            return description;
+
+            var doc = new StringBuilder(description);
+            var url = GetPropertyUrl(property);
+            if (string.IsNullOrWhiteSpace(url) == false)
+            {
+                // The pointy bracket form of a markdown destination, so that a
+                // URL containing brackets of its own cannot end the link early.
+                doc.Append("\n\n[More information](<")
+                    .Append(url.Trim())
+                    .Append(">)");
+            }
+
+            var valueTable = PropertyDocumentation.BuildValueTable(
+                GetPropertyValues(property),
+                url);
+            if (valueTable.Count > 0)
+            {
+                doc.Append("\n\nPossible values:\n\n```text");
+                foreach (var line in valueTable)
+                {
+                    doc.Append('\n').Append(line);
+                }
+                doc.Append("\n```");
+            }
+            return doc.ToString();
         }
 
         internal void Build(
