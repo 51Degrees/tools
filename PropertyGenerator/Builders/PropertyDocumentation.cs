@@ -73,6 +73,14 @@ namespace PropertyGenerator.Builders
         /// builders which read their properties from a data file rather than
         /// from the common metadata.
         /// </summary>
+        /// <remarks>
+        /// Every value is read, not just the few the table will show, because
+        /// the overflow line needs the exact total and each engine value must
+        /// be disposed regardless. For a data file property with many values
+        /// the objects beyond the table cap are transient. Acceptable while
+        /// these builders are only used ad hoc; revisit if an engine backed
+        /// generator is ever wired into <c>Program</c>.
+        /// </remarks>
         internal static IReadOnlyList<DocumentedValue> FromEngine(
             IFiftyOneAspectPropertyMetaData property)
         {
