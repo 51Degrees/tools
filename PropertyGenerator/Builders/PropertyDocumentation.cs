@@ -102,7 +102,11 @@ namespace PropertyGenerator.Builders
         /// </summary>
         /// <param name="values">
         /// The values a property can return. Entries without a name are
-        /// skipped, as the name is the value itself.
+        /// skipped, as the name is the value itself. Names are collapsed onto
+        /// a single line the same way descriptions are: every line of the
+        /// table becomes one line of a comment in the generated source, so a
+        /// name carrying a line break would otherwise end the comment early
+        /// and leave the rest of itself as code.
         /// </param>
         /// <param name="url">
         /// Page with more information about the property, used to point at the
@@ -120,7 +124,10 @@ namespace PropertyGenerator.Builders
             string url)
         {
             var named = (values ?? Array.Empty<DocumentedValue>())
-                .Where(value => string.IsNullOrWhiteSpace(value.Name) == false)
+                .Select(value => new DocumentedValue(
+                    Shorten(value.Name),
+                    value.Description))
+                .Where(value => value.Name.Length > 0)
                 .ToArray();
             if (named.Length == 0)
             {
