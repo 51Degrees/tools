@@ -64,5 +64,34 @@ namespace PropertyGenerator.Builders
         {
             return Array.Empty<DocumentedValue>();
         }
+
+        /// <summary>
+        /// Documentation assembled once per property. Cached because the
+        /// interface and the class of a language are generated from the same
+        /// properties, and reading the values from an engine walks and
+        /// disposes every one of them on each call.
+        /// </summary>
+        private readonly Dictionary<T, PropertyDocs> _documentation = new();
+
+        /// <summary>
+        /// Get the URL and the laid out value table for a property, assembled
+        /// the same way for every language so the emitters stay in lockstep.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        internal PropertyDocs GetPropertyDocumentation(T property)
+        {
+            if (_documentation.TryGetValue(property, out var docs) == false)
+            {
+                var url = GetPropertyUrl(property);
+                docs = new PropertyDocs(
+                    url,
+                    PropertyDocumentation.BuildValueTable(
+                        GetPropertyValues(property),
+                        url));
+                _documentation.Add(property, docs);
+            }
+            return docs;
+        }
     }
 }

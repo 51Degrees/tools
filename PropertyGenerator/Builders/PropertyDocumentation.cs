@@ -21,6 +21,22 @@ namespace PropertyGenerator.Builders
     internal sealed record DocumentedValue(string Name, string Description);
 
     /// <summary>
+    /// The documentation shared by every emitter for one property: the page
+    /// with more information, and the laid out value table. The languages
+    /// differ only in how they wrap these.
+    /// </summary>
+    /// <param name="Url">
+    /// Page with more information about the property. May be null or empty.
+    /// </param>
+    /// <param name="ValueTable">
+    /// The lines of the fixed width value table. Empty when there is nothing
+    /// to document.
+    /// </param>
+    internal sealed record PropertyDocs(
+        string Url,
+        IReadOnlyList<string> ValueTable);
+
+    /// <summary>
     /// Builds the language independent parts of the documentation which is
     /// written into the generated accessors: the fixed width table of the
     /// values a property can return, and the escaping each doc format needs.
@@ -35,6 +51,13 @@ namespace PropertyGenerator.Builders
         /// (True, False, Unknown, N/A) line up in a readable column.
         /// </summary>
         private const int MinimumValueColumnWidth = 10;
+
+        /// <summary>
+        /// Widest the value column is allowed to become. Without a ceiling a
+        /// single long value pushes every description out to its width, which
+        /// is neither a readable table nor a line an IDE tooltip can show.
+        /// </summary>
+        private const int MaximumValueColumnWidth = 40;
 
         /// <summary>
         /// Number of spaces between the longest value and the start of the
@@ -90,7 +113,8 @@ namespace PropertyGenerator.Builders
             }
 
             var values = new List<DocumentedValue>();
-            foreach (var value in property.GetValues())
+            foreach (var value in property.GetValues() ??
+                Enumerable.Empty<IValueMetaData>())
             {
                 // The engine's values wrap resources owned by the data file,
                 // so each one is released once it has been read.
@@ -145,9 +169,12 @@ namespace PropertyGenerator.Builders
             var documented = named
                 .Take(Constants.MaxDocumentedValues)
                 .ToArray();
-            var columnWidth = Math.Max(
-                documented.Max(value => value.Name.Length) + ValueColumnPadding,
-                MinimumValueColumnWidth);
+            var columnWidth = Math.Min(
+                Math.Max(
+                    documented.Max(value => value.Name.Length) +
+                        ValueColumnPadding,
+                    MinimumValueColumnWidth),
+                MaximumValueColumnWidth);
 
             var lines = documented
                 .Select(value => BuildRow(value, columnWidth))
@@ -167,14 +194,22 @@ namespace PropertyGenerator.Builders
 
         /// <summary>
         /// Build a single row of the table. A value with no description is
-        /// written on its own rather than padded into an empty column.
+        /// written on its own rather than padded into an empty column, and a
+        /// value wider than the capped column gets its own separator, as
+        /// padding is a no-op for it and the description would otherwise butt
+        /// straight up against it.
         /// </summary>
         private static string BuildRow(DocumentedValue value, int columnWidth)
         {
             var description = Shorten(value.Description);
-            return description.Length == 0 ?
-                value.Name :
-                value.Name.PadRight(columnWidth) + description;
+            if (description.Length == 0)
+            {
+                return value.Name;
+            }
+            var padded = value.Name.PadRight(columnWidth);
+            return padded.Length > columnWidth ?
+                padded + new string(' ', ValueColumnPadding) + description :
+                padded + description;
         }
 
         /// <summary>
@@ -232,6 +267,24 @@ namespace PropertyGenerator.Builders
                 .Replace("<", "&lt;")
                 .Replace(">", "&gt;")
                 .Replace("\"", "&quot;");
+        }
+
+        /// <summary>
+        /// Escape a line for a Javadoc comment. Javadoc is a block comment, so
+        /// a value carrying "*/" would end it early and leave the rest of the
+        /// table as code that does not compile. A line starting with "@", or
+        /// carrying "{@", is read as a tag even inside a &lt;pre&gt; block,
+        /// which is an error under -Xdoclint. C# and Rust write line comments,
+        /// so only Java needs this on top of <see cref="EscapeMarkup"/>.
+        /// </summary>
+        internal static string EscapeJavaDoc(string text)
+        {
+            var escaped = EscapeMarkup(text)
+                .Replace("*/", "*&#47;")
+                .Replace("{@", "{&#64;");
+            return escaped.StartsWith("@", StringComparison.Ordinal) ?
+                "&#64;" + escaped.Substring(1) :
+                escaped;
         }
     }
 }

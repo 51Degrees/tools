@@ -61,10 +61,7 @@ namespace PropertyGenerator.Builders
         /// </returns>
         internal IEnumerable<string> GetRemarks(T property, string indent)
         {
-            var url = GetPropertyUrl(property);
-            var valueTable = PropertyDocumentation.BuildValueTable(
-                GetPropertyValues(property),
-                url);
+            var (url, valueTable) = GetPropertyDocumentation(property);
             if (string.IsNullOrWhiteSpace(url) && valueTable.Count == 0)
             {
                 yield break;

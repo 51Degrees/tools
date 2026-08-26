@@ -10,6 +10,10 @@ on:
 
 jobs:
   Build:
+    # The restore needs the organisation's package feed, and a pull request
+    # from a fork cannot read the secret which authenticates it - the check
+    # would go red on every fork pull request whatever it contains.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

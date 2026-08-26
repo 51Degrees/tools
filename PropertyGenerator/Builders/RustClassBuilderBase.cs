@@ -91,29 +91,50 @@ namespace PropertyGenerator.Builders
             }
 
             var doc = new StringBuilder(description);
-            var url = GetPropertyUrl(property);
+            var (url, valueTable) = GetPropertyDocumentation(property);
             if (string.IsNullOrWhiteSpace(url) == false)
             {
                 // The pointy bracket form of a markdown destination, so that a
-                // URL containing brackets of its own cannot end the link early.
+                // URL containing brackets of its own cannot end the link
+                // early. A literal ">" would still close the destination, so
+                // it is percent encoded, which keeps the link working.
                 doc.Append("\n\n[More information](<")
-                    .Append(url.Trim())
+                    .Append(url.Trim().Replace(">", "%3E"))
                     .Append(">)");
             }
 
-            var valueTable = PropertyDocumentation.BuildValueTable(
-                GetPropertyValues(property),
-                url);
             if (valueTable.Count > 0)
             {
-                doc.Append("\n\nPossible values:\n\n```text");
+                // The fence must be longer than the longest backtick run in
+                // the table, or a description carrying three backticks would
+                // close it early and the remaining rows would be parsed as
+                // rustdoc markdown.
+                var fence = new string('`', Math.Max(
+                    3,
+                    valueTable.Max(LongestBacktickRun) + 1));
+                doc.Append("\n\nPossible values:\n\n").Append(fence).Append("text");
                 foreach (var line in valueTable)
                 {
                     doc.Append('\n').Append(line);
                 }
-                doc.Append("\n```");
+                doc.Append('\n').Append(fence);
             }
             return doc.ToString();
+        }
+
+        /// <summary>
+        /// The length of the longest run of consecutive backticks in a line.
+        /// </summary>
+        private static int LongestBacktickRun(string line)
+        {
+            var longest = 0;
+            var current = 0;
+            foreach (var character in line)
+            {
+                current = character == '`' ? current + 1 : 0;
+                longest = Math.Max(longest, current);
+            }
+            return longest;
         }
 
         internal void Build(

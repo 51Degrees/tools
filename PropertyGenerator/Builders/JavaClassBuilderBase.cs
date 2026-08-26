@@ -56,12 +56,13 @@ namespace PropertyGenerator.Builders
         /// </returns>
         internal IEnumerable<string> GetJavaDocBody(T property, string indent)
         {
-            yield return indent + " * " + GetPropertyDescription(property);
+            // The description goes through the Javadoc escape as well as the
+            // table: this is a block comment, so a "*/" anywhere in the text
+            // would end it early, and a leading "@" is read as a tag.
+            yield return indent + " * " + PropertyDocumentation.EscapeJavaDoc(
+                GetPropertyDescription(property));
 
-            var url = GetPropertyUrl(property);
-            var valueTable = PropertyDocumentation.BuildValueTable(
-                GetPropertyValues(property),
-                url);
+            var (url, valueTable) = GetPropertyDocumentation(property);
             if (valueTable.Count > 0)
             {
                 yield return indent + " * <p>";
@@ -70,13 +71,13 @@ namespace PropertyGenerator.Builders
                 foreach (var line in valueTable)
                 {
                     yield return indent + " * " +
-                        PropertyDocumentation.EscapeMarkup(line);
+                        PropertyDocumentation.EscapeJavaDoc(line);
                 }
                 yield return indent + " * </pre>";
             }
             if (string.IsNullOrWhiteSpace(url) == false)
             {
-                var escapedUrl = PropertyDocumentation.EscapeMarkup(url.Trim());
+                var escapedUrl = PropertyDocumentation.EscapeJavaDoc(url.Trim());
                 yield return indent + " *";
                 yield return indent +
                     $" * @see <a href=\"{escapedUrl}\">More information</a>";
