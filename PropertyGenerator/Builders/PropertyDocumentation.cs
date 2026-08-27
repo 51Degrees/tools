@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PropertyGenerator.Builders
 {
@@ -71,6 +72,19 @@ namespace PropertyGenerator.Builders
         private const string Ellipsis = "...";
 
         /// <summary>
+        /// An ampersand which does not open a recognised character entity.
+        /// Some metadata descriptions arrive already HTML escaped (e.g. the
+        /// Html-Media-Capture description carries &amp;lt;input ...&amp;gt;),
+        /// and escaping their ampersands again would display the entity text
+        /// literally. Only the five predefined entities and numeric forms are
+        /// recognised, so an accidental "&amp;D;" is still escaped rather
+        /// than left as an unknown entity.
+        /// </summary>
+        private static readonly Regex BareAmpersand = new Regex(
+            "&(?!(amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);)",
+            RegexOptions.Compiled);
+
+        /// <summary>
         /// Get the values to document for a property from the common
         /// metadata. Nothing is returned unless the metadata says the values
         /// should be exported, as that is the flag which marks a property as
@@ -79,6 +93,13 @@ namespace PropertyGenerator.Builders
         internal static IReadOnlyList<DocumentedValue> FromMetaData(
             IPropertyMetaData property)
         {
+            // ValuesOmitted is deliberately not consulted. It is a signal
+            // within a metadata generation run and is never serialised, so on
+            // the deserialised metadata this tool reads it is always false -
+            // its own documentation says not to reason about deserialised
+            // metadata with it. And where it can be true, the extract omits
+            // the values entirely rather than truncating, so a partial list
+            // with the flag set does not occur.
             if (property.ExportValues == false || property.Values == null)
             {
                 return Array.Empty<DocumentedValue>();
@@ -206,10 +227,15 @@ namespace PropertyGenerator.Builders
             {
                 return value.Name;
             }
-            var padded = value.Name.PadRight(columnWidth);
-            return padded.Length > columnWidth ?
-                padded + new string(' ', ValueColumnPadding) + description :
-                padded + description;
+            // The name's own length is the discriminator, not the padded
+            // length: padding brings every shorter name out at exactly the
+            // column width, so comparing the padded length would either miss
+            // the name that fills the column exactly (>) or double pad every
+            // row (>=). A name at or over the column width fills it with no
+            // room left, so it carries its own separator.
+            return value.Name.Length >= columnWidth ?
+                value.Name + new string(' ', ValueColumnPadding) + description :
+                value.Name.PadRight(columnWidth) + description;
         }
 
         /// <summary>
@@ -262,8 +288,7 @@ namespace PropertyGenerator.Builders
         /// </summary>
         internal static string EscapeMarkup(string text)
         {
-            return (text ?? string.Empty)
-                .Replace("&", "&amp;")
+            return BareAmpersand.Replace(text ?? string.Empty, "&amp;")
                 .Replace("<", "&lt;")
                 .Replace(">", "&gt;")
                 .Replace("\"", "&quot;");
