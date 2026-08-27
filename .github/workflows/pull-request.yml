@@ -1,0 +1,41 @@
+name: Pull Request
+
+# This repository had no checks on a pull request, and PropertyGenerator only
+# restores against the 51Degrees GitHub Packages feed (FiftyOne.MetaData), so
+# nothing built a change before merge - the first full build was the next
+# accessor-generation run in a consuming repository's nightly. This workflow
+# builds both solutions so a compile error is caught on the PR instead.
+on:
+  pull_request:
+
+jobs:
+  Build:
+    # The restore needs the organisation's package feed, and a pull request
+    # from a fork cannot read the secret which authenticates it - the check
+    # would go red on every fork pull request whatever it contains.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # PropertyGenerator targets net8.0, CopyrightUpdater net10.0.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      # FiftyOne.MetaData is on the organisation's GitHub Packages feed. The
+      # engine packages restore from nuget.org.
+      - name: Add 51Degrees package feed
+        run: dotnet nuget add source "https://nuget.pkg.github.com/51degrees/index.json" --name github --username Automation51D --password "${{ secrets.ACCESS_TOKEN }}" --store-password-in-clear-text
+
+      # The project rather than the solution, because a RuntimeIdentifier
+      # cannot be applied at solution level (NETSDK1134). -a x64 for the same
+      # reason as ci/generate-accessors.ps1 - without it the IpIntelligence
+      # package's .targets tries to infer win-x86.
+      - name: Build PropertyGenerator
+        run: dotnet build PropertyGenerator/PropertyGenerator.csproj -c Release -a x64
+
+      - name: Build CopyrightUpdater
+        run: dotnet build CopyrightUpdater.sln -c Release

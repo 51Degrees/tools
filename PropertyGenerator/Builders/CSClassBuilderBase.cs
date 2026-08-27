@@ -45,6 +45,54 @@ namespace PropertyGenerator.Builders
             });
         }
 
+        /// <summary>
+        /// Build the remarks section which follows the summary of a generated
+        /// accessor: a link to the page with more information, and the table
+        /// of values the property can return. Nothing is returned when the
+        /// property has neither, so accessors that gained no documentation are
+        /// unchanged.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="indent">
+        /// Indent to write each line at, matching the member being documented.
+        /// </param>
+        /// <returns>
+        /// The lines of the remarks section, ready to write.
+        /// </returns>
+        internal IEnumerable<string> GetRemarks(T property, string indent)
+        {
+            var (url, valueTable) = GetPropertyDocumentation(property);
+            if (string.IsNullOrWhiteSpace(url) && valueTable.Count == 0)
+            {
+                yield break;
+            }
+
+            yield return indent + "/// <remarks>";
+            if (string.IsNullOrWhiteSpace(url) == false)
+            {
+                var escapedUrl = PropertyDocumentation.EscapeMarkup(url.Trim());
+                yield return indent + "/// <para>";
+                yield return indent + "/// See " +
+                    $"<see href=\"{escapedUrl}\">{escapedUrl}</see>" +
+                    " for more information.";
+                yield return indent + "/// </para>";
+            }
+            if (valueTable.Count > 0)
+            {
+                yield return indent + "/// <para>";
+                yield return indent + "/// Possible values:";
+                yield return indent + "/// </para>";
+                yield return indent + "/// <code>";
+                foreach (var line in valueTable)
+                {
+                    yield return indent + "/// " +
+                        PropertyDocumentation.EscapeMarkup(line);
+                }
+                yield return indent + "/// </code>";
+            }
+            yield return indent + "/// </remarks>";
+        }
+
         internal string GetKeyValuePair(T property)
         {
             return string.Format("{{ \"{0}\", typeof({1}) }}",
@@ -91,6 +139,10 @@ namespace PropertyGenerator.Builders
                     writer.WriteLine("\t\t/// <summary>");
                     writer.WriteLine("\t\t/// " + GetDescription(property));
                     writer.WriteLine("\t\t/// </summary>");
+                    foreach (var remark in GetRemarks(property, "\t\t"))
+                    {
+                        writer.WriteLine(remark);
+                    }
                     writer.WriteLine("\t\t{0} {1} {{ get; }}",
                         GetPropertyType(property),
                         GetGetterName(property));
@@ -194,6 +246,10 @@ namespace PropertyGenerator.Builders
                     writer.WriteLine("\t\t/// <summary>");
                     writer.WriteLine("\t\t/// " + GetDescription(property));
                     writer.WriteLine("\t\t/// </summary>");
+                    foreach (var remark in GetRemarks(property, "\t\t"))
+                    {
+                        writer.WriteLine(remark);
+                    }
                     writer.WriteLine("\t\t" + GetGetter(property));
                 }
                 writer.WriteLine("\t}");

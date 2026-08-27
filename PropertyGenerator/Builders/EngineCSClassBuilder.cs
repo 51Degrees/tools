@@ -26,6 +26,17 @@ namespace PropertyGenerator.Builders
             return property.Name;
         }
 
+        protected override string GetPropertyUrl(IFiftyOneAspectPropertyMetaData property)
+        {
+            return property.Url;
+        }
+
+        protected override IReadOnlyList<DocumentedValue> GetPropertyValues(
+            IFiftyOneAspectPropertyMetaData property)
+        {
+            return PropertyDocumentation.FromEngine(property);
+        }
+
         protected override string GetPropertyType(IFiftyOneAspectPropertyMetaData property)
         {
             var coreType = property.Type switch

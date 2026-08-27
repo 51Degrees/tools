@@ -41,6 +41,49 @@ namespace PropertyGenerator.Builders
             return $"public {type} {GetGetterName(property)}() {{ return getAs(\"{GetPropertyName(property).ToLower()}\", {string.Join(", ", parts.Select(p => p + ".class"))}); }}";
         }
 
+        /// <summary>
+        /// Build the body of the Javadoc comment for a generated accessor:
+        /// the description, the table of values the property can return, and
+        /// a link to the page with more information. The link is written last
+        /// because Javadoc requires block tags to follow the description.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="indent">
+        /// Indent to write each line at, matching the member being documented.
+        /// </param>
+        /// <returns>
+        /// The lines of the comment body, ready to write.
+        /// </returns>
+        internal IEnumerable<string> GetJavaDocBody(T property, string indent)
+        {
+            // The description goes through the Javadoc escape as well as the
+            // table: this is a block comment, so a "*/" anywhere in the text
+            // would end it early, and a leading "@" is read as a tag.
+            yield return indent + " * " + PropertyDocumentation.EscapeJavaDoc(
+                GetPropertyDescription(property));
+
+            var (url, valueTable) = GetPropertyDocumentation(property);
+            if (valueTable.Count > 0)
+            {
+                yield return indent + " * <p>";
+                yield return indent + " * Possible values:";
+                yield return indent + " * <pre>";
+                foreach (var line in valueTable)
+                {
+                    yield return indent + " * " +
+                        PropertyDocumentation.EscapeJavaDoc(line);
+                }
+                yield return indent + " * </pre>";
+            }
+            if (string.IsNullOrWhiteSpace(url) == false)
+            {
+                var escapedUrl = PropertyDocumentation.EscapeJavaDoc(url.Trim());
+                yield return indent + " *";
+                yield return indent +
+                    $" * @see <a href=\"{escapedUrl}\">More information</a>";
+            }
+        }
+
         internal void BuildInterface(
             string name,
             string copyright,
@@ -76,7 +119,10 @@ namespace PropertyGenerator.Builders
                     .OrderBy(GetPropertyName))
                 {
                     writer.WriteLine("\t/**");
-                    writer.WriteLine("\t * " + GetPropertyDescription(property));
+                    foreach (var line in GetJavaDocBody(property, "\t"))
+                    {
+                        writer.WriteLine(line);
+                    }
                     writer.WriteLine("\t */");
                     writer.WriteLine("\t{0} {1}();",
                         GetPropertyType(property),
@@ -141,7 +187,10 @@ namespace PropertyGenerator.Builders
                     .OrderBy(GetPropertyName))
                 {
                     writer.WriteLine("\t/**");
-                    writer.WriteLine("\t * " + GetPropertyDescription(property));
+                    foreach (var line in GetJavaDocBody(property, "\t"))
+                    {
+                        writer.WriteLine(line);
+                    }
                     writer.WriteLine("\t */");
                     writer.WriteLine("\t@SuppressWarnings(\"unchecked\")");
                     writer.WriteLine("\t@Override");
