@@ -12,7 +12,7 @@ Push-Location $UpdaterPath
 try {
 
     dotnet build -c Release
-    dotnet run -e $TargetRepoPath
+    dotnet run -- -e $TargetRepoPath
 
 }
 finally {
