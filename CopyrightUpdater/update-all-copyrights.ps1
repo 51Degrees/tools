@@ -3,10 +3,9 @@ $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
 $repos = @(
+    '51degrees-cxx'
     'caching-dotnet'
-    'common-cxx'
     'common-dotnet'
-    'device-detection-cxx'
     'device-detection-dotnet'
     'device-detection-dotnet-examples'
     'device-detection-java'
@@ -17,8 +16,6 @@ $repos = @(
     'device-detection-php-onpremise'
     'device-detection-python'
     'internal-common-dotnet'
-    'ip-graph-cxx'
-    'ip-intelligence-cxx'
     'ip-intelligence-dotnet'
     'ip-intelligence-dotnet-examples'
     'ip-intelligence-java'
