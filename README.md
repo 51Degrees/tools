@@ -27,7 +27,7 @@ The utility expect two arguments: [command] [path]
 - -r - report mode - list the license/copyright notices present in the files under the path.
 - -e - enforce mode - modify matching files to have a particular notice.
 
-**path** is the complete path to the directory to check. For example, D:\Workspace\common-cxx
+**path** is the complete path to the directory to check. For example, D:\Workspace\51degrees-cxx
 
 ### Configuration
 
