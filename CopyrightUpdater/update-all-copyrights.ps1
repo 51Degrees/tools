@@ -4,6 +4,7 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 $repos = @(
     '51degrees-cxx'
+    '51degrees-node'
     'caching-dotnet'
     'common-dotnet'
     'device-detection-dotnet'
@@ -11,7 +12,6 @@ $repos = @(
     'device-detection-java'
     'device-detection-java-examples'
     'device-detection-nginx'
-    'device-detection-node'
     'device-detection-php'
     'device-detection-php-onpremise'
     'device-detection-python'
@@ -22,12 +22,10 @@ $repos = @(
     'ip-intelligence-java-examples'
     'location-dotnet'
     'location-java'
-    'location-node'
     'location-php'
     'location-python'
     'pipeline-dotnet'
     'pipeline-java'
-    'pipeline-node'
     'pipeline-php-cloudrequestengine'
     'pipeline-php-core'
     'pipeline-php-engines'
