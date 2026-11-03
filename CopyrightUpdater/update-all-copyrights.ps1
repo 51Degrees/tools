@@ -6,13 +6,11 @@ $repos = @(
     '51degrees-cxx'
     '51degrees-dotnet'
     '51degrees-java'
+    '51degrees-nginx'
     '51degrees-node'
     '51degrees-php'
-    'device-detection-nginx'
-    'device-detection-python'
+    '51degrees-python'
     'internal-common-dotnet'
-    'location-python'
-    'pipeline-python'
     # 'pipeline-wordpress' # disabled due to CopyrightUpdater requiring having the language in the repo name
 )
 
