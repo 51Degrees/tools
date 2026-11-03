@@ -4,6 +4,7 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 $repos = @(
     '51degrees-cxx'
+    '51degrees-python'
     'caching-dotnet'
     'common-dotnet'
     'device-detection-dotnet'
@@ -14,7 +15,6 @@ $repos = @(
     'device-detection-node'
     'device-detection-php'
     'device-detection-php-onpremise'
-    'device-detection-python'
     'internal-common-dotnet'
     'ip-intelligence-dotnet'
     'ip-intelligence-dotnet-examples'
@@ -24,14 +24,12 @@ $repos = @(
     'location-java'
     'location-node'
     'location-php'
-    'location-python'
     'pipeline-dotnet'
     'pipeline-java'
     'pipeline-node'
     'pipeline-php-cloudrequestengine'
     'pipeline-php-core'
     'pipeline-php-engines'
-    'pipeline-python'
     # 'pipeline-wordpress' # disabled due to CopyrightUpdater requiring having the language in the repo name
 )
 
