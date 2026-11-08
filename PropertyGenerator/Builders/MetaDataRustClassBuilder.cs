@@ -88,10 +88,8 @@ namespace PropertyGenerator.Builders
             {
                 ValueTypeEnum.Int => "Integer",
                 ValueTypeEnum.Bool => "Bool",
-                // The core metadata enum has no single-precision variant, so a
-                // single float is published as a double, as the C# generator does.
                 ValueTypeEnum.Double => "Double",
-                ValueTypeEnum.Single => "Double",
+                ValueTypeEnum.Single => "Float",
                 ValueTypeEnum.JavaScript => "JavaScript",
                 ValueTypeEnum.String => property.IsList ? "StringList" : "String",
                 _ => "String",
