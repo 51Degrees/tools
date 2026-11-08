@@ -41,7 +41,7 @@ namespace PropertyGenerator.Builders
                 // IP addresses are surfaced as their textual form in Rust.
                 ValueTypeEnum.IP => property.IsList ? "Vec<String>" : "String",
                 ValueTypeEnum.JavaScript => property.IsList ? "Vec<String>" : "String",
-                ValueTypeEnum.WKBR => property.IsList ? "Vec<WktString>" : "WktString",
+                ValueTypeEnum.WKBR => property.IsList ? "Vec<String>" : "String",
                 ValueTypeEnum.WeightedString => "Vec<WeightedValue<String>>",
                 ValueTypeEnum.WeightedInt => "Vec<WeightedValue<i32>>",
                 ValueTypeEnum.WeightedDouble => "Vec<WeightedValue<f64>>",
@@ -71,7 +71,6 @@ namespace PropertyGenerator.Builders
                 ValueTypeEnum.Bool => "boolean",
                 ValueTypeEnum.Double => "double",
                 ValueTypeEnum.Single => "float",
-                ValueTypeEnum.WKBR => "wkt_string",
                 _ => "string",
             };
         }
