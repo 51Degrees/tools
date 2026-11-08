@@ -133,7 +133,7 @@ namespace PropertyGenerator
                     "an absent value carries the engine's no-value reason.",
                 uses:
                 [
-                    "fiftyone_pipeline_core::{PropertyValueType, WeightedValue}",
+                    "fiftyone_pipeline_core::{PropertyValueType, WeightedValue, WktString}",
                     "fiftyone_pipeline_engines::{AspectData, AspectPropertyValue}",
                     "crate::data::IpIntelligenceDataBase",
                 ],
