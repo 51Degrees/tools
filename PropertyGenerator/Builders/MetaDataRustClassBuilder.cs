@@ -79,8 +79,9 @@ namespace PropertyGenerator.Builders
         {
             if (IsWeighted(property.ValueType))
             {
-                // Weighted lists surface through the dynamic bag as a flattened
-                // key-value list of value/weight records.
+                // Weighted lists surface through the dynamic bag as a key-value
+                // list of records, each holding the raw weighting under
+                // "rawweighting" and the candidate under "value".
                 return "KeyValueList";
             }
 
