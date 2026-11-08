@@ -123,8 +123,8 @@ namespace PropertyGenerator
                     "per documented property, and implements it for the hand-written\n" +
                     "[`IpIntelligenceDataBase`] by delegating to its by-name stores. Plain\n" +
                     "properties resolve to a single typed value; the weighted properties\n" +
-                    "(the country-code distributions and `Mcc`) resolve to an ordered list of\n" +
-                    "weighted candidates.",
+                    "(the country-code distributions, `Mcc` and `StateGeoNameIdsGeographical`)\n" +
+                    "resolve to an ordered list of weighted candidates.",
                 traitDescription:
                     "Strongly-typed read accessors for IP Intelligence properties.\n" +
                     "\n" +
