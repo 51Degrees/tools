@@ -6,6 +6,8 @@ namespace PropertyGenerator.Builders
     {
         protected override string DataBaseType => "IpIntelligenceDataBase";
 
+        protected override bool DefaultBodies => true;
+
         protected override string GetPropertyDescription(IPropertyMetaData property)
         {
             return property.Description;
@@ -79,8 +81,9 @@ namespace PropertyGenerator.Builders
         {
             if (IsWeighted(property.ValueType))
             {
-                // Weighted lists surface through the dynamic bag as a flattened
-                // key-value list of value/weight records.
+                // Weighted lists surface through the dynamic bag as a key-value
+                // list of records, each holding the raw weighting under
+                // "rawweighting" and the candidate under "value".
                 return "KeyValueList";
             }
 
@@ -88,11 +91,10 @@ namespace PropertyGenerator.Builders
             {
                 ValueTypeEnum.Int => "Integer",
                 ValueTypeEnum.Bool => "Bool",
-                // The core metadata enum has no single-precision variant, so a
-                // single float is published as a double, as the C# generator does.
                 ValueTypeEnum.Double => "Double",
-                ValueTypeEnum.Single => "Double",
+                ValueTypeEnum.Single => "Float",
                 ValueTypeEnum.JavaScript => "JavaScript",
+                ValueTypeEnum.WKBR => "WktString",
                 ValueTypeEnum.String => property.IsList ? "StringList" : "String",
                 _ => "String",
             };
