@@ -6,6 +6,8 @@ namespace PropertyGenerator.Builders
     {
         protected override string DataBaseType => "IpIntelligenceDataBase";
 
+        protected override bool DefaultBodies => true;
+
         protected override string GetPropertyDescription(IPropertyMetaData property)
         {
             return property.Description;

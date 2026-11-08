@@ -25,6 +25,20 @@ namespace PropertyGenerator.Builders
         protected abstract string DataBaseType { get; }
 
         /// <summary>
+        /// Whether each accessor in the trait has a default body giving no
+        /// value with a reason naming the property. An implementation of the
+        /// trait outside the crates then keeps compiling when a property is
+        /// added, and the data base still reads every property from its
+        /// stores.
+        /// </summary>
+        protected virtual bool DefaultBodies => false;
+
+        /// <summary>
+        /// The function the default bodies call, written after the trait.
+        /// </summary>
+        private const string NotProvidedFunction = "not_provided";
+
+        /// <summary>
         /// The by-name store getter on the data base to delegate to for a property,
         /// e.g. "string", "integer", "boolean", "float", "weighted_string".
         /// </summary>
@@ -170,14 +184,34 @@ namespace PropertyGenerator.Builders
             writer.WriteLine();
 
             // Trait.
+            if (DefaultBodies)
+            {
+                traitDescription +=
+                    "\n\n" +
+                    "Each accessor has a default body that gives no value, with a reason\n" +
+                    "naming the property, so an implementation outside these crates keeps\n" +
+                    $"compiling when a property is added. [`{DataBaseType}`] reads\n" +
+                    "every property from its stores.";
+            }
             WriteOuterDoc(writer, traitDescription, "");
             writer.WriteLine($"pub trait {traitName}: AspectData {{");
             for (int i = 0; i < filtered.Length; i++)
             {
                 var property = filtered[i];
                 WriteOuterDoc(writer, PropertyDoc(property), "    ");
-                writer.WriteLine(
-                    $"    fn {GetGetterName(property)}(&self) -> {GetPropertyType(property)};");
+                if (DefaultBodies)
+                {
+                    writer.WriteLine(
+                        $"    fn {GetGetterName(property)}(&self) -> {GetPropertyType(property)} {{");
+                    writer.WriteLine(
+                        $"        {NotProvidedFunction}(\"{GetPropertyName(property)}\")");
+                    writer.WriteLine("    }");
+                }
+                else
+                {
+                    writer.WriteLine(
+                        $"    fn {GetGetterName(property)}(&self) -> {GetPropertyType(property)};");
+                }
                 if (i != filtered.Length - 1)
                 {
                     writer.WriteLine();
@@ -185,6 +219,21 @@ namespace PropertyGenerator.Builders
             }
             writer.WriteLine("}");
             writer.WriteLine();
+
+            if (DefaultBodies)
+            {
+                writer.WriteLine(
+                    "/// The no-value an accessor gives when the implementation does not provide");
+                writer.WriteLine("/// the property.");
+                writer.WriteLine(
+                    $"fn {NotProvidedFunction}<T>(name: &str) -> AspectPropertyValue<T> {{");
+                writer.WriteLine("    AspectPropertyValue::no_value(format!(");
+                writer.WriteLine(
+                    $"        \"Property '{{name}}' is not provided by this implementation of {traitName}.\"");
+                writer.WriteLine("    ))");
+                writer.WriteLine("}");
+                writer.WriteLine();
+            }
 
             // Impl that delegates to the by-name store getters.
             writer.WriteLine($"impl {traitName} for {DataBaseType} {{");
