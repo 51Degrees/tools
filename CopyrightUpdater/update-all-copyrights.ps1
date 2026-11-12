@@ -5,11 +5,13 @@ $PSNativeCommandUseErrorActionPreference = $true
 $repos = @(
     '51degrees-cxx'
     '51degrees-dotnet'
+    '51degrees-go'
     '51degrees-java'
     '51degrees-nginx'
     '51degrees-node'
     '51degrees-php'
     '51degrees-python'
+    '51degrees-rust'
     'internal-common-dotnet'
     # 'pipeline-wordpress' # disabled due to CopyrightUpdater requiring having the language in the repo name
 )
