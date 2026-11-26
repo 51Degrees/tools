@@ -117,6 +117,9 @@ namespace PropertyGenerationTool
                 name: "DeviceDataBase",
                 interfaceName: "DeviceData",
                 copyright: _copyright,
+                description:
+                " * Abstract base class for properties relating to a device returned\n" +
+                " * by a device detection engine.",
                 package: "fiftyone.devicedetection.shared",
                 imports: [
                     "fiftyone.pipeline.core.data.types.JavaScript",
