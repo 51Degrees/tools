@@ -56,18 +56,110 @@ namespace PropertyGenerator.Builders
             return $"((String)this.getWithCheck(\"{GetPropertyName(property).ToLower()}\"))";
         }
 
+        /// <summary>
+        /// Build the generated accessor. The value is read through the typed
+        /// helper of AspectDataBase which matches the shape of the property,
+        /// so the accessor needs no unchecked cast:
+        /// getValue for a single value, getList for a list of values, and
+        /// getWeightedList for a list of weighted values.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns>
+        /// The accessor as a single line of Java.
+        /// </returns>
         internal string GetGetter(T property)
         {
             var type = GetPropertyType(property);
-            var parts = type.Split(new[] { '<', '>', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            return $"public {type} {GetGetterName(property)}() {{ return getAs(\"{GetPropertyName(property).ToLower()}\", {string.Join(", ", parts.Select(p => p + ".class"))}); }}";
+            var key = GetPropertyName(property).ToLower();
+            return $"public {type} {GetGetterName(property)}() {{ return {GetValueCall(type, key)}; }}";
+        }
+
+        private const string ValueWrapper = "AspectPropertyValue<";
+        private const string ListPrefix = "List<";
+        private const string WeightedListPrefix = "List<IWeightedValue<";
+
+        /// <summary>
+        /// Build the call to the AspectDataBase helper which returns the value
+        /// of a property with the given Java type.
+        /// </summary>
+        /// <param name="type">
+        /// The Java type of the accessor, for example
+        /// AspectPropertyValue&lt;List&lt;String&gt;&gt;.
+        /// </param>
+        /// <param name="key">
+        /// The key the value is stored under.
+        /// </param>
+        /// <returns>
+        /// The Java expression which returns the value.
+        /// </returns>
+        private static string GetValueCall(string type, string key)
+        {
+            if (type.StartsWith(ValueWrapper, StringComparison.Ordinal) == false ||
+                type.EndsWith(">", StringComparison.Ordinal) == false)
+            {
+                throw new ArgumentException(
+                    $"Java type '{type}' is not an AspectPropertyValue.",
+                    nameof(type));
+            }
+            var valueType = type.Substring(
+                ValueWrapper.Length,
+                type.Length - ValueWrapper.Length - 1);
+            if (valueType.StartsWith(WeightedListPrefix, StringComparison.Ordinal))
+            {
+                return $"getWeightedList(\"{key}\", " +
+                    $"{GetElementType(valueType, WeightedListPrefix, 2)}.class)";
+            }
+            if (valueType.StartsWith(ListPrefix, StringComparison.Ordinal))
+            {
+                return $"getList(\"{key}\", " +
+                    $"{GetElementType(valueType, ListPrefix, 1)}.class)";
+            }
+            return $"getValue(\"{key}\", {valueType}.class)";
+        }
+
+        /// <summary>
+        /// Get the element type from a generic Java type, for example String
+        /// from List&lt;IWeightedValue&lt;String&gt;&gt;.
+        /// </summary>
+        private static string GetElementType(
+            string valueType,
+            string prefix,
+            int closing)
+        {
+            var element = valueType.Substring(
+                prefix.Length,
+                valueType.Length - prefix.Length - closing);
+            if (element.Contains('<') ||
+                valueType.EndsWith(new string('>', closing), StringComparison.Ordinal) == false)
+            {
+                throw new ArgumentException(
+                    $"Java type '{valueType}' has no plain element type.",
+                    nameof(valueType));
+            }
+            return element;
+        }
+
+        /// <summary>
+        /// Build the description of the value an accessor returns, for the
+        /// Javadoc @return tag which every accessor needs.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns>
+        /// The text which follows @return.
+        /// </returns>
+        internal string GetJavaDocReturn(T property)
+        {
+            return "the value of the " +
+                PropertyDocumentation.EscapeJavaDoc(GetPropertyName(property)) +
+                " property";
         }
 
         /// <summary>
         /// Build the body of the Javadoc comment for a generated accessor:
-        /// the description, the table of values the property can return, and
-        /// a link to the page with more information. The link is written last
-        /// because Javadoc requires block tags to follow the description.
+        /// the description, the table of values the property can return, what
+        /// the accessor returns, and a link to the page with more information.
+        /// The tags are written last because Javadoc requires block tags to
+        /// follow the description.
         /// </summary>
         /// <param name="property"></param>
         /// <param name="indent">
@@ -81,8 +173,15 @@ namespace PropertyGenerator.Builders
             // The description goes through the Javadoc escape as well as the
             // table: this is a block comment, so a "*/" anywhere in the text
             // would end it early, and a leading "@" is read as a tag.
+            // A property with no description in the metadata still needs a
+            // main description, which Javadoc's doclint requires.
+            var description = GetPropertyDescription(property);
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                description = $"Gets the {GetPropertyName(property)} property.";
+            }
             yield return indent + " * " + PropertyDocumentation.EscapeJavaDoc(
-                GetPropertyDescription(property));
+                description);
 
             var (url, valueTable) = GetPropertyDocumentation(property);
             if (valueTable.Count > 0)
@@ -97,10 +196,11 @@ namespace PropertyGenerator.Builders
                 }
                 yield return indent + " * </pre>";
             }
+            yield return indent + " *";
+            yield return indent + " * @return " + GetJavaDocReturn(property);
             if (string.IsNullOrWhiteSpace(url) == false)
             {
                 var escapedUrl = PropertyDocumentation.EscapeJavaDoc(url.Trim());
-                yield return indent + " *";
                 yield return indent +
                     $" * @see <a href=\"{escapedUrl}\">More information</a>";
             }
@@ -159,6 +259,7 @@ namespace PropertyGenerator.Builders
             string name,
             string interfaceName,
             string copyright,
+            string description,
             string package,
             IEnumerable<string> imports,
             T[] properties,
@@ -184,6 +285,9 @@ namespace PropertyGenerator.Builders
                 writer.WriteLine("import org.slf4j.Logger;");
                 writer.WriteLine("import java.util.List;");
 
+                writer.WriteLine("/**");
+                writer.WriteLine(description);
+                writer.WriteLine(" */");
                 writer.WriteLine($"public abstract class {name} extends AspectDataBase implements {interfaceName}");
                 writer.WriteLine("{");
 
@@ -214,7 +318,6 @@ namespace PropertyGenerator.Builders
                         writer.WriteLine(line);
                     }
                     writer.WriteLine("\t */");
-                    writer.WriteLine("\t@SuppressWarnings(\"unchecked\")");
                     writer.WriteLine("\t@Override");
                     writer.WriteLine("\t" + GetGetter(property));
                 }

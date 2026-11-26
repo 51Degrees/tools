@@ -120,6 +120,9 @@ namespace PropertyGenerator
                 name: "IPIntelligenceDataBase",
                 interfaceName: "IPIntelligenceData",
                 copyright: _copyright,
+                description:
+                " * Abstract base class for properties relating to an IP.\n" +
+                " * This includes the network, and location.",
                 package: "fiftyone.ipintelligence.shared",
                 imports: imports,
                 properties: GetProperties(),
